@@ -3,6 +3,7 @@ package es.ceu.gisi.modcomp.gic_algorithms.interfaces;
 import es.ceu.gisi.modcomp.gic_algorithms.exceptions.CFGAlgorithmsException;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 
 
 
@@ -13,7 +14,9 @@ import java.util.Set;
  * @author Sergio Saugar <sergio.saugargarcia@ceu.es>
  */
 public interface CFGInterface {
-
+    
+    Set<Character> setNonTerminal = new HashSet<>();
+    
     /**
      * Método que añade los elementos no terminales de la gramática.
      *
@@ -22,9 +25,9 @@ public interface CFGInterface {
      * @throws CFGAlgorithmsException Si el elemento no es una letra mayúscula o
      *                                si ya está en el conjunto.
      */
-    public void addNonTerminal(char nonterminal) throws CFGAlgorithmsException;
-
-
+    public void addNonTerminal(char nonterminal) throws CFGAlgorithmsException; 
+        
+    
 
     /**
      * Método que elimina el símbolo no terminal indicado de la gramática.

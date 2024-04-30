@@ -6,7 +6,7 @@ package es.ceu.gisi.modcomp.gic_algorithms.exceptions;
  */
 public class CFGAlgorithmsException extends Exception {
 
-    public CFGAlgorithmsException() {
+    public CFGAlgorithmsException(String mensaje){
+        super(mensaje);
     }
-
 }

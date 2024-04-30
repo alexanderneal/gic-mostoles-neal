@@ -4,6 +4,7 @@ import es.ceu.gisi.modcomp.gic_algorithms.exceptions.CFGAlgorithmsException;
 import es.ceu.gisi.modcomp.gic_algorithms.interfaces.*;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 
 
 
@@ -15,7 +16,7 @@ import java.util.Set;
  * @author Sergio Saugar García <sergio.saugargarcia@ceu.es>
  */
 public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface, CYKInterface {
-
+    Set<Character> setNonTerminal = new HashSet<>();
     /**
      * Método que añade los elementos no terminales de la gramática.
      *
@@ -24,8 +25,18 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      * @throws CFGAlgorithmsException Si el elemento no es una letra mayúscula o
      *                                si ya está en el conjunto.
      */
+    @Override
     public void addNonTerminal(char nonterminal) throws CFGAlgorithmsException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if(!Character.isUpperCase(nonterminal)){
+            throw new CFGAlgorithmsException("El noTerminal debe ser mayuscula");
+        } 
+        if(setNonTerminal.contains(nonterminal)){
+            throw new CFGAlgorithmsException("Ya pertence al conjunto");
+        }
+        if(Character.isDigit(nonterminal)){
+            throw new CFGAlgorithmsException("noTerminal debe ser una letra");
+        }
+            setNonTerminal.add(nonterminal);
     }
 
 

@@ -4,7 +4,8 @@ import es.ceu.gisi.modcomp.gic_algorithms.exceptions.CFGAlgorithmsException;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
-
+import java.util.Map;
+import java.util.HashMap;
 
 
 /**
@@ -16,6 +17,8 @@ import java.util.HashSet;
 public interface CFGInterface {
     
     Set<Character> setNonTerminal = new HashSet<>();
+    Set<Character> setTerminal = new HashSet<>();
+    Map<Set<Character>, String> producciones = new HashMap<>();
     
     /**
      * Método que añade los elementos no terminales de la gramática.

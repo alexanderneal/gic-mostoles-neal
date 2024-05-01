@@ -5,6 +5,8 @@ import es.ceu.gisi.modcomp.gic_algorithms.interfaces.*;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 
 
 
@@ -17,6 +19,9 @@ import java.util.HashSet;
  */
 public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface, CYKInterface {
     Set<Character> setNonTerminal = new HashSet<>();
+    Set<Character> setTerminal = new HashSet<>();
+    Map<Set<Character>, String> producciones = new HashMap<>();
+    
     /**
      * Método que añade los elementos no terminales de la gramática.
      *
@@ -50,8 +55,12 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      *
      * @throws CFGAlgorithmsException Si el elemento no pertenece a la gramática
      */
+    @Override
     public void removeNonTerminal(char nonterminal) throws CFGAlgorithmsException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+       if(!setNonTerminal.contains(nonterminal)) {
+           throw new CFGAlgorithmsException("Ese noTerminal, no pertenece a la gramática");
+       }
+       setNonTerminal.remove(nonterminal);
     }
 
 
@@ -62,8 +71,10 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      *
      * @return Un conjunto con los no terminales definidos.
      */
-    public Set<Character> getNonTerminals() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    @Override
+    public Set<Character> getNonTerminals()  {
+        Set<Character> set2 = new HashSet<>(setNonTerminal);
+        return set2;
     }
 
 

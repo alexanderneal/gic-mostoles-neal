@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -72,7 +73,22 @@ public class T1_CFGBasicTest {
         gica.addTerminal('a');
     }
 
-
+    @Test
+    public void comprobarEliminarnoTerminalValido1() throws CFGAlgorithmsException {
+        gica = new CFGAlgorithms();
+        gica.addNonTerminal('A');
+        gica.removeNonTerminal('A');
+        assertTrue(gica.getNonTerminals().isEmpty());
+    }
+    
+    @Test
+    public void comprobarEliminarnoTerminalNoValido1() throws CFGAlgorithmsException {
+        gica = new CFGAlgorithms();
+        gica.addNonTerminal('A');
+        gica.removeNonTerminal('B');
+        assertTrue(gica.getNonTerminals().contains('A'));
+        //assertFalse(gica.getNonTerminals().isEmpty());
+}
 
     @Test
     public void comprobarEliminarTerminalValido1() throws CFGAlgorithmsException {
@@ -83,8 +99,8 @@ public class T1_CFGBasicTest {
 
         assertTrue(gica.getTerminals().isEmpty());
     }
-
-
+    
+    
 
     @Test
     public void comprobarEliminarTerminalValido2() throws CFGAlgorithmsException {
@@ -384,7 +400,14 @@ public class T1_CFGBasicTest {
     }
 
 
-
+    @Test
+    public void comprobarRecuperarnoterminales() throws CFGAlgorithmsException{
+        gica = new CFGAlgorithms();
+        gica.addNonTerminal('A');
+        gica.getNonTerminals();
+        assertTrue(!gica.getNonTerminals().isEmpty());
+    }
+            
     @Test
     public void comprobarRecuperarProducciones() throws CFGAlgorithmsException {
         gica = new CFGAlgorithms();

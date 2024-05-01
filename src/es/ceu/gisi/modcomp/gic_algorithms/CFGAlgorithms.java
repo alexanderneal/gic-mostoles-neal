@@ -87,12 +87,19 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      * @throws CFGAlgorithmsException Si el elemento no es una letra minúscula o
      *                                si ya está en el conjunto.
      */
+    @Override
     public void addTerminal(char terminal) throws CFGAlgorithmsException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+       if(!Character.isLowerCase(terminal)) {
+           throw new CFGAlgorithmsException("El noTerminal debe ser minuscula");
+       }
+        if(!Character.isDigit(terminal)) {
+            throw new CFGAlgorithmsException("noTerminal debe ser una letra");
+       }
+       setTerminal.add(terminal);
     }
 
-
-
+    
+    
     /**
      * Método que elimina el símbolo terminal indicado de la gramática.
      * También debe eliminar todas las producciones en las que aparece.

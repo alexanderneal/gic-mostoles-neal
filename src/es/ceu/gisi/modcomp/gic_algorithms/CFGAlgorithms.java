@@ -72,7 +72,7 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      * @return Un conjunto con los no terminales definidos.
      */
     @Override
-    public Set<Character> getNonTerminals()  {
+    public Set<Character> getNonTerminals() {
         Set<Character> set2 = new HashSet<>(setNonTerminal);
         return set2;
     }
@@ -90,10 +90,10 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
     @Override
     public void addTerminal(char terminal) throws CFGAlgorithmsException {
        if(!Character.isLowerCase(terminal)) {
-           throw new CFGAlgorithmsException("El noTerminal debe ser minuscula");
+           throw new CFGAlgorithmsException("El terminal debe ser minuscula");
        }
-        if(!Character.isDigit(terminal)) {
-            throw new CFGAlgorithmsException("noTerminal debe ser una letra");
+        if(Character.isDigit(terminal)) {
+           throw new CFGAlgorithmsException("El terminal debe ser una letra");
        }
        setTerminal.add(terminal);
     }
@@ -108,10 +108,14 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      *
      * @throws CFGAlgorithmsException Si el elemento no pertenece a la gramática
      */
+    @Override
     public void removeTerminal(char terminal) throws CFGAlgorithmsException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if(!setTerminal.contains(terminal)) {
+            throw new CFGAlgorithmsException("Ese terminal, no pertenece a la gramática");
+        }
+        setTerminal.remove(terminal);
     }
-
+    
 
 
     /**
@@ -120,8 +124,10 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      *
      * @return Un conjunto con los terminales definidos.
      */
+    @Override
     public Set<Character> getTerminals() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Set<Character> set3 = new HashSet<>(setTerminal); 
+        return set3;
     }
 
 

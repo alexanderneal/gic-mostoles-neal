@@ -41,6 +41,7 @@ public class T1_CFGBasicTest {
 
     @Test
     public void comprobarAniadirTerminalValido() throws CFGAlgorithmsException {
+        thrown.expect(CFGAlgorithmsException.class);
         gica = new CFGAlgorithms();
         gica.addTerminal('a');
     }
@@ -401,13 +402,21 @@ public class T1_CFGBasicTest {
 
 
     @Test
-    public void comprobarRecuperarnoterminales() throws CFGAlgorithmsException{
+    public void comprobarRecuperarnoterminales() throws CFGAlgorithmsException {
         gica = new CFGAlgorithms();
         gica.addNonTerminal('A');
         gica.getNonTerminals();
         assertTrue(!gica.getNonTerminals().isEmpty());
     }
-            
+          
+    @Test
+    public void comprobarRecuperarTerminales() throws CFGAlgorithmsException {
+        gica = new CFGAlgorithms();
+        gica.addTerminal('a');
+        gica.getTerminals();
+        assertTrue(!gica.getTerminals().isEmpty());
+    }
+    
     @Test
     public void comprobarRecuperarProducciones() throws CFGAlgorithmsException {
         gica = new CFGAlgorithms();

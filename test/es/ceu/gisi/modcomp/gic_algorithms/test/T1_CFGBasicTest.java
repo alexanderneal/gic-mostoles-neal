@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -415,6 +414,16 @@ public class T1_CFGBasicTest {
         gica.addTerminal('a');
         gica.getTerminals();
         assertTrue(!gica.getTerminals().isEmpty());
+    }
+    
+    @Test
+    public void comprobarRecuperarAxiomaValido() throws CFGAlgorithmsException {
+        gica = new CFGAlgorithms();
+        gica.addTerminal('a');
+        gica.addNonTerminal('A');
+        gica.setStartSymbol('A');
+        gica.getStartSymbol();
+        assertTrue(gica.getStartSymbol() == 'A');
     }
     
     @Test

@@ -3,6 +3,7 @@ package es.ceu.gisi.modcomp.gic_algorithms;
 import es.ceu.gisi.modcomp.gic_algorithms.exceptions.CFGAlgorithmsException;
 import es.ceu.gisi.modcomp.gic_algorithms.interfaces.*;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
@@ -21,6 +22,11 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
     Set<Character> setNonTerminal = new HashSet<>();
     Set<Character> setTerminal = new HashSet<>();
     Map<Set<Character>, String> producciones = new HashMap<>();
+    
+    char nonterminal;
+    Character axioma = null;
+    List<Character> setOrdenado = new ArrayList<>(nonterminal);
+    List<Character> nonTerminals = new ArrayList<>();
     
     /**
      * Método que añade los elementos no terminales de la gramática.
@@ -141,10 +147,15 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      * @throws CFGAlgorithmsException Si el elemento insertado no forma parte
      *                                del conjunto de elementos no terminales.
      */
+    @Override
     public void setStartSymbol(char nonterminal) throws CFGAlgorithmsException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        //if (nonTerminals.isEmpty()) {
+          //throw new CFGAlgorithmsException("No hay axioma definido");
+        //}
+        nonTerminals.remove(Character.valueOf(nonterminal));
+        nonTerminals.add(0,nonterminal);
+        axioma=nonterminal;
     }
-
 
 
     /**
@@ -155,8 +166,12 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      * @throws CFGAlgorithmsException Si el axioma todavía no ha sido
      *                                establecido.
      */
+    @Override
     public Character getStartSymbol() throws CFGAlgorithmsException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if(axioma == null){
+            throw new CFGAlgorithmsException("Defina un axioma");
+        }
+        return axioma;
     }
 
 

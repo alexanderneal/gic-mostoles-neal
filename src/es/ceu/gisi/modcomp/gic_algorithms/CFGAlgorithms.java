@@ -21,7 +21,7 @@ import java.util.HashMap;
 public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface, CYKInterface {
     Set<Character> setNonTerminal = new HashSet<>();
     Set<Character> setTerminal = new HashSet<>();
-    Map<Set<Character>, String> producciones = new HashMap<>();
+    Map<Character, String> producciones = new HashMap<>();
     
     char nonterminal;
     Character axioma = null;
@@ -188,7 +188,7 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      * @throws CFGAlgorithmsException Si está compuesta por elementos
      *                                (terminales o no terminales) no definidos previamente.
      */
-    public void addProduction(char nonterminal, String production) throws CFGAlgorithmsException {
+    public void addProduction(char nonterminal, String production) throws CFGAlgorithmsException { 
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

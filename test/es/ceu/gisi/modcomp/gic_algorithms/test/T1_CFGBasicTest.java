@@ -254,7 +254,7 @@ public class T1_CFGBasicTest {
         gica.addNonTerminal('A');
 
         gica.addProduction('S', "b");
-    }
+    } //este test comprueba q se haga assert equals de b, cuando no se ha metido
 
 
 
@@ -268,7 +268,7 @@ public class T1_CFGBasicTest {
         gica.addNonTerminal('A');
 
         gica.addProduction('C', "a");
-    }
+    } //este test comprueba q se haga assert equals de C, cuando no se ha metido
 
 
 

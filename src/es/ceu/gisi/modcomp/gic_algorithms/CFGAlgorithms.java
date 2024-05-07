@@ -21,7 +21,7 @@ import java.util.HashMap;
 public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface, CYKInterface {
     Set<Character> setNonTerminal = new HashSet<>();
     Set<Character> setTerminal = new HashSet<>();
-    Map<Character, String> producciones = new HashMap<>();
+    Map<Character, List<String>> producciones = new HashMap<>();
     
     char nonterminal;
     Character axioma = null;
@@ -188,10 +188,14 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      * @throws CFGAlgorithmsException Si está compuesta por elementos
      *                                (terminales o no terminales) no definidos previamente.
      */
+    @Override
     public void addProduction(char nonterminal, String production) throws CFGAlgorithmsException { 
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        producciones.putIfAbsent(nonterminal, production);
+        if(producciones.containsValue(production) != true) {
+            throw new CFGAlgorithmsException("El valor no esta en la produccion");
+        }
     }
-
+            
 
 
     /**
@@ -205,8 +209,15 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      * @throws CFGAlgorithmsException Si la producción no pertenecía a ese
      *                                elemento no terminal.
      */
+    @Override
     public boolean removeProduction(char nonterminal, String production) throws CFGAlgorithmsException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if(producciones.remove(nonterminal, production) == true ) {
+            return true;
+        } else {
+            throw new CFGAlgorithmsException("El valor no esta en la produccion");
+        }
+       //If no esta la produccion indicada, pues no se peuded borrar.
+       //dos elementos??
     }
 
 
@@ -221,8 +232,9 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      * @return Devuelve una lista de String donde cada String es la parte
      *         derecha de cada producción
      */
+    @Override
     public List<String> getProductions(char nonterminal) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        producciones.get(nonterminal);
     }
 
 

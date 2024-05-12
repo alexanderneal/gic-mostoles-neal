@@ -254,7 +254,10 @@ public class T1_CFGBasicTest {
         gica.addNonTerminal('A');
 
         gica.addProduction('S', "b");
+        
     } //este test comprueba q se haga assert equals de b, cuando no se ha metido
+    //mete a como terminal, pero luego no lo llama al hacer addProduction.
+    //y la b previamente no ha sido añadida.
 
 
 
@@ -281,7 +284,7 @@ public class T1_CFGBasicTest {
         gica.addNonTerminal('S');
         gica.addNonTerminal('A');
         gica.addProduction('S', "AB");
-    }
+    }//este test eleva debe elevar una excepcion ya que AB 
 
 
 

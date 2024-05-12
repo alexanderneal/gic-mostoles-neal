@@ -4,6 +4,7 @@ import es.ceu.gisi.modcomp.gic_algorithms.exceptions.CFGAlgorithmsException;
 import es.ceu.gisi.modcomp.gic_algorithms.interfaces.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,7 +23,6 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
     Set<Character> setNonTerminal = new HashSet<>();
     Set<Character> setTerminal = new HashSet<>();
     Map<Character, List<String>> producciones = new HashMap<>();
-    
     char nonterminal;
     Character axioma = null;
     List<Character> setOrdenado = new ArrayList<>(nonterminal);
@@ -190,9 +190,12 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      */
     @Override
     public void addProduction(char nonterminal, String production) throws CFGAlgorithmsException { 
-        producciones.putIfAbsent(nonterminal, production);
-        if(producciones.containsValue(production) != true) {
-            throw new CFGAlgorithmsException("El valor no esta en la produccion");
+        producciones.putIfAbsent(nonterminal, new ArrayList<>());
+        List<String> produccionesList = producciones.get(nonterminal);
+        if(!produccionesList.contains(production)) {
+            produccionesList.add(production);
+        } else {
+            throw new CFGAlgorithmsException("El valor ya estaba en la produccion");
         }
     }
             
@@ -234,8 +237,10 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      */
     @Override
     public List<String> getProductions(char nonterminal) {
-        producciones.get(nonterminal);
+       producciones.get(nonterminal);
+    return producciones.get(nonterminal);
     }
+
 
 
 
@@ -252,12 +257,21 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      *         salida podría ser: "S::=aBb|bC|dC". Las producciones DEBEN IR ORDENADAS
      *         POR ORDEN ALFABÉTICO.
      */
+    @Override
     public String getProductionsToString(char nonterminal) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String producciones = nonterminal + "::=";
+        List<String> var = getProductions(nonterminal);
+        Collections.sort(var);
+        //esto ordena alfabeticamente la lista var
+        for(int j=0; j<var.size();j++){
+        producciones=producciones+var.get(j);
+        if(j<var.size()-1){
+        producciones +="|";
+        }
+        }
+        return producciones;
     }
-
-
-
+    
     /**
      * Devuelve un String con la gramática completa. Todos los elementos no
      * terminales deberán aparecer por orden alfabético (A,B,C...).

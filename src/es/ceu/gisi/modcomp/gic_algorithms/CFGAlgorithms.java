@@ -280,6 +280,7 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      *         los elementos no terminales ORDENADOS POR ORDEN ALFABÉTICO.
      */
     public String getGrammar() {
+        System.out.println("Prueba");
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

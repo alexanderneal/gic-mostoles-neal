@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 
 
@@ -27,6 +28,7 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
     Character axioma = null;
     List<Character> setOrdenado = new ArrayList<>(nonterminal);
     List<Character> nonTerminals = new ArrayList<>();
+    String gramm;
     
     /**
      * Método que añade los elementos no terminales de la gramática.
@@ -149,9 +151,6 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      */
     @Override
     public void setStartSymbol(char nonterminal) throws CFGAlgorithmsException {
-        //if (nonTerminals.isEmpty()) {
-          //throw new CFGAlgorithmsException("No hay axioma definido");
-        //}
         nonTerminals.remove(Character.valueOf(nonterminal));
         nonTerminals.add(0,nonterminal);
         axioma=nonterminal;
@@ -262,12 +261,11 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
         String producciones = nonterminal + "::=";
         List<String> var = getProductions(nonterminal);
         Collections.sort(var);
-        //esto ordena alfabeticamente la lista var
         for(int j=0; j<var.size();j++){
         producciones=producciones+var.get(j);
-        if(j<var.size()-1){
-        producciones +="|";
-        }
+            if(j<var.size()-1){
+                producciones +="|";
+            }
         }
         return producciones;
     }
@@ -279,21 +277,41 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      * @return Devuelve el agregado de hacer getProductionsToString sobre todos
      *         los elementos no terminales ORDENADOS POR ORDEN ALFABÉTICO.
      */
+    @Override
     public String getGrammar() {
-        System.out.println("Prueba");
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Set<Character> set3 = new HashSet<>(setNonTerminal); 
+        List<Character> sortedNoTerminales = new ArrayList<>(set3);
+        Collections.sort(sortedNoTerminales);
+         
+        String nonTerminalsString = sortedNoTerminales.stream().map(String::valueOf).collect(Collectors.joining(","));
+        Set<Character> terminals = getTerminals();
+        Character startSymbol = axioma;
+        String producciones = getProductionsToString(nonterminal).trim();
+        
+        String gramm = nonTerminalsString +","+terminals+","+startSymbol+","+producciones;
+        return gramm;
+        
     }
 
-
+    
 
     /**
      * Elimina todos los elementos que se han introducido hasta el momento en la
      * gramática (elementos terminales, no terminales, axioma y producciones),
      * dejando el algoritmo listo para volver a insertar una gramática nueva.
      */
-    public void deleteGrammar() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    @Override
+public void deleteGrammar() {
+    if (!setNonTerminal.isEmpty() || !setTerminal.isEmpty() || !producciones.isEmpty() || axioma != null) {
+        setNonTerminal.clear();
+        setTerminal.clear();
+        producciones.clear();
+        axioma = null;
+        gramm = "";
+    } else {
+        throw new UnsupportedOperationException("No se ha podido borrar la gramática");
     }
+}
 
 
 

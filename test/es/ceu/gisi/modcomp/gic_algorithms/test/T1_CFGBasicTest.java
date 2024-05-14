@@ -357,7 +357,35 @@ public class T1_CFGBasicTest {
     }
 
 
-
+    @Test 
+    public void comprobarGramatica() throws CFGAlgorithmsException {
+    //thrown.expect(CFGAlgorithmsException.class);
+    gica = new CFGAlgorithms();
+    gica.addTerminal('a');
+    gica.addNonTerminal('A');
+    gica.setStartSymbol('S');
+    gica.addProduction('S', "ASa");
+    gica.addProduction('A', "Aa");
+    gica.addProduction('S', "a");
+    assertEquals("S::=ASa|a", gica.getProductionsToString('S'));
+    }
+    
+    
+    @Test 
+    public void comprobarBorrarGramatica() throws CFGAlgorithmsException {
+     thrown.expect(UnsupportedOperationException.class); 
+    gica = new CFGAlgorithms();
+    gica.addTerminal('a');
+    gica.addNonTerminal('A');
+    gica.setStartSymbol('S');
+    gica.addProduction('S', "ASa");
+    gica.addProduction('A', "Aa");
+    gica.addProduction('S', "a");
+    gica.deleteGrammar();
+    gica.deleteGrammar();
+   }
+    
+    
     @Test
     public void comprobarEliminaProduccionValida1() throws CFGAlgorithmsException {
         gica = new CFGAlgorithms();

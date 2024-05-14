@@ -359,7 +359,6 @@ public class T1_CFGBasicTest {
 
     @Test 
     public void comprobarGramatica() throws CFGAlgorithmsException {
-    //thrown.expect(CFGAlgorithmsException.class);
     gica = new CFGAlgorithms();
     gica.addTerminal('a');
     gica.addNonTerminal('A');
@@ -373,7 +372,7 @@ public class T1_CFGBasicTest {
     
     @Test 
     public void comprobarBorrarGramatica() throws CFGAlgorithmsException {
-     thrown.expect(UnsupportedOperationException.class); 
+    thrown.expect(UnsupportedOperationException.class); 
     gica = new CFGAlgorithms();
     gica.addTerminal('a');
     gica.addNonTerminal('A');

@@ -213,17 +213,20 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      */
     @Override
     public boolean removeProduction(char nonterminal, String production) throws CFGAlgorithmsException {
-        if(producciones.remove(nonterminal, production) == true ) {
-            return true;
-        } else {
-            throw new CFGAlgorithmsException("El valor no esta en la produccion");
+        if (!producciones.containsKey(nonterminal)) {
+            throw new CFGAlgorithmsException("El no terminal no tiene producciones.");
         }
-       //If no esta la produccion indicada, pues no se peuded borrar.
-       //dos elementos??
+        
+        List<String> produccionesList = producciones.get(nonterminal);
+        if (!produccionesList.contains(production)) {
+            throw new CFGAlgorithmsException("El valor no está en la producción");
+        }
+        produccionesList.remove(production);
+        if (produccionesList.isEmpty()) {
+            producciones.remove(nonterminal);
+        }
+        return true;
     }
-
-
-
     /**
      * Devuelve una lista de String que representan todas las producciones que
      * han sido agregadas a un elemento no terminal.
@@ -352,8 +355,11 @@ public void deleteGrammar() {
      *
      * @return True si contiene ese tipo de reglas
      */
+    @Override
     public boolean hasUselessProductions() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
+        
+    return true;
     }
 
 

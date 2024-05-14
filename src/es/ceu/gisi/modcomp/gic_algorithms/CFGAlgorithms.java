@@ -261,16 +261,21 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      */
     @Override
     public String getProductionsToString(char nonterminal) {
-        String producciones = nonterminal + "::=";
+        if(!producciones.containsKey(nonterminal)){
+            return nonterminal + "::=";
+        }
+        StringBuilder produccionesBuilder = new StringBuilder(nonterminal + "::=");
         List<String> var = getProductions(nonterminal);
         Collections.sort(var);
         for(int j=0; j<var.size();j++){
-        producciones=producciones+var.get(j);
-            if(j<var.size()-1){
-                producciones +="|";
+            if(!var.get(j).isEmpty()){
+                produccionesBuilder.append(var.get(j));
+                if(j<var.size()-1){
+                    produccionesBuilder.append("|");
+                }
             }
         }
-        return producciones;
+        return produccionesBuilder.toString();
     }
     
     /**

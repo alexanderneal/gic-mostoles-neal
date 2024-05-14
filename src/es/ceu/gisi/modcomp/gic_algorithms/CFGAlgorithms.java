@@ -321,11 +321,30 @@ public void deleteGrammar() {
      *
      * @return true Si la gramática es una gramática independiente del contexto.
      */
+    @Override
     public boolean isCFG() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Set<Map.Entry<Character, List<String>>> entradas = producciones.entrySet();
+        for(Map.Entry<Character, List<String>>entrada:entradas){
+        char elementoNoTerminalIzq = entrada.getKey();
+        List<String> listaProduccionesDcha = entrada.getValue();
+        
+        if(!setNonTerminal.contains(elementoNoTerminalIzq)){
+            return false;
+        }
+        
+        for(int i=0; i<listaProduccionesDcha.size(); i++){
+            String produccionDcha = listaProduccionesDcha.get(i);
+           
+                for(int j=0; j< produccionDcha.length(); j++){
+                char simbolo = produccionDcha.charAt(j);
+                    if(!setTerminal.contains(simbolo) && !setNonTerminal.contains(simbolo)&& simbolo !='l'){
+                        return false;
+                    }
+                } 
+            }
+        }
+    return true;
     }
-
-
 
     /**
      * Método que comprueba si la gramática almacenada tiene reglas innecesarias

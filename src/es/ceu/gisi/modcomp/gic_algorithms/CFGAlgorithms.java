@@ -191,12 +191,18 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
     public void addProduction(char nonterminal, String production) throws CFGAlgorithmsException { 
         producciones.putIfAbsent(nonterminal, new ArrayList<>());
         List<String> produccionesList = producciones.get(nonterminal);
-        if(!produccionesList.contains(production)) {
-            produccionesList.add(production);
-        } else {
-            throw new CFGAlgorithmsException("El valor ya estaba en la produccion");
+        
+        if(produccionesList.contains(production)){
+            throw new CFGAlgorithmsException("La produccion ya ha sido añadida previamente");
+        }
+        for(int i=0; i<production.length();i++){
+        char simbolo = production.charAt(i);
+            if(!setTerminal.contains(simbolo) && !setNonTerminal.contains(simbolo) && simbolo != 'l'){
+            throw new CFGAlgorithmsException("La produccion contiene simbolos no defeinidos previamente");
+            }
         }
     }
+        
             
 
 

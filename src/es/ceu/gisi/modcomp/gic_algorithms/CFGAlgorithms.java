@@ -2,6 +2,7 @@ package es.ceu.gisi.modcomp.gic_algorithms;
 
 import es.ceu.gisi.modcomp.gic_algorithms.exceptions.CFGAlgorithmsException;
 import es.ceu.gisi.modcomp.gic_algorithms.interfaces.*;
+import java.util.AbstractMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +11,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import java.util.Iterator;
+
 
 
 
@@ -395,8 +398,29 @@ public void deleteGrammar() {
      *         por cada producción), con todas las reglas innecesarias
      *         eliminadas.
      */
+    @Override
     public List<String> removeUselessProductions() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    List<String> produccionesEliminadas = new ArrayList<>(); 
+    List<Map.Entry<Character, String>> produccionesAEliminar = new ArrayList<>();
+    
+    Set<Map.Entry<Character, List<String>>> entradas = producciones.entrySet();
+    
+    for(Map.Entry<Character, List<String>>entrada:entradas){
+        char elementoNoTerminalIzq = entrada.getKey();
+        List<String> listaProduccionesDcha = entrada.getValue();
+        Iterator<String> iterator = listaProduccionesDcha.iterator();
+           
+            while (iterator.hasNext()) {
+                String production = iterator.next();
+                    if (production.length() == 1 && production.charAt(0) == elementoNoTerminalIzq) {
+                
+                        produccionesEliminadas.add(elementoNoTerminalIzq + "::=" + production);
+                
+                         produccionesAEliminar.add(new AbstractMap.SimpleEntry<>(elementoNoTerminalIzq, production));
+                    }
+            }   
+    }   
+        return produccionesEliminadas;
     }
 
 

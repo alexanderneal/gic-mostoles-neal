@@ -4,6 +4,8 @@ import es.ceu.gisi.modcomp.gic_algorithms.CFGAlgorithms;
 import es.ceu.gisi.modcomp.gic_algorithms.exceptions.CFGAlgorithmsException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
@@ -568,6 +570,16 @@ public class T1_CFGBasicTest {
     gica = new CFGAlgorithms();
     gica.addNonTerminal('A');
     gica.addProduction('A', "A");
-    assertTrue(gica.hasUselessProductions());    }
+    assertTrue(gica.hasUselessProductions());   
+    }
     
+    @Test
+    public void comprobarEliminarUselessProductions() throws CFGAlgorithmsException {
+    gica = new CFGAlgorithms(); 
+    gica.addNonTerminal('A');     
+    gica.addProduction('A', "A");
+        List<String> expected = new ArrayList<>();
+        expected.add("A::=A");
+    assertEquals(expected, gica.removeUselessProductions()); 
+    }
 }

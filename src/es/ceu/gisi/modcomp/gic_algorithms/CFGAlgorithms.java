@@ -431,12 +431,78 @@ public void deleteGrammar() {
      * @return Devuelve una lista con todos los símbolos no terminales y
      *         terminales eliminados.
      */
+    @Override
     public List<Character> removeUselessSymbols() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Set<Character> Viejo = new HashSet<>();
+        Set<Character> Nuevo = new HashSet<>();
+
+        for (Map.Entry<Character, List<String>> entrada : producciones.entrySet()) {
+                char A = entrada.getKey();
+                for (String produccion : entrada.getValue()) {
+                  if (isTerminalString(produccion)) {
+                      Nuevo.add(A);
+                     break;
+                    }
+                }
+            }
+        
+        while (!Viejo.equals(Nuevo)) {
+            Viejo = new HashSet<>(Nuevo);
+            for (Map.Entry<Character, List<String>> entrada : producciones.entrySet()) {
+                char A = entrada.getKey();
+                for (String produccion : entrada.getValue()) {
+                    if (containsOnly(Viejo, produccion)) {
+                        Nuevo.add(A);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        Set<Character> inutiles = new HashSet<>(setNonTerminal);
+        inutiles.removeAll(Nuevo);
+        
+        List<Character> eliminados = new ArrayList<>(inutiles);
+        setNonTerminal.removeAll(inutiles);
+        
+        for (char inutil : inutiles) {
+            producciones.remove(inutil);
+        }
+
+        for (Map.Entry<Character, List<String>> entrada : producciones.entrySet()) {
+            entrada.getValue().removeIf(produccion -> containsAny(inutiles, produccion));
+        }
+
+        return eliminados;
     }
-
-
-
+        
+private boolean isTerminalString(String produccion) {
+        for (char c : produccion.toCharArray()) {
+            if (!setTerminal.contains(c) && c != 'l') {
+                return false;
+            }
+        }
+        return true;
+    }
+        
+    private boolean containsOnly(Set<Character> conjunto, String produccion) {
+        for (char c : produccion.toCharArray()) {
+            if (!conjunto.contains(c) && !setTerminal.contains(c) && c != 'l') {
+                return false;
+            }
+        }
+        return true;
+    }  
+        
+    private boolean containsAny(Set<Character> conjunto, String produccion) {
+        for (char c : produccion.toCharArray()) {
+            if (conjunto.contains(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * Método que comprueba si la gramática almacenada tiene reglas no
      * generativas (reglas lambda). Excepto S::=l si sólo es para reconocer la

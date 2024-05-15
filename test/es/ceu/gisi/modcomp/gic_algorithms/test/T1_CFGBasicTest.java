@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
@@ -582,4 +583,32 @@ public class T1_CFGBasicTest {
         expected.add("A::=A");
     assertEquals(expected, gica.removeUselessProductions()); 
     }
+    
+    @Test
+    public void testRemoveLambdaProductions() throws CFGAlgorithmsException {
+        gica = new CFGAlgorithms();  
+        gica.addNonTerminal('S');
+        gica.addNonTerminal('A');
+        gica.addNonTerminal('B');
+        gica.addNonTerminal('C');
+        gica.addTerminal('a');
+        gica.addTerminal('b');
+
+        gica.addProduction('S', "aA");
+        gica.addProduction('A', "bB");
+        gica.addProduction('B', "l");
+        gica.addProduction('C', "S");
+        gica.addProduction('S', "l");
+
+        gica.setStartSymbol('S');
+
+        List<Character> noTerminalesTratados = gica.removeLambdaProductions();
+
+        
+        assertTrue(noTerminalesTratados.contains('B'));
+        assertTrue(noTerminalesTratados.contains('S'));
+
+        
+    }
+    
 }

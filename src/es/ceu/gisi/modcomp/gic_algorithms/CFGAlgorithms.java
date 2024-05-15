@@ -510,9 +510,25 @@ private boolean isTerminalString(String produccion) {
      *
      * @return True si contiene ese tipo de reglas
      */
-    public boolean hasLambdaProductions() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    @Override
+public boolean hasLambdaProductions() {
+    for (Map.Entry<Character, List<String>> entrada : producciones.entrySet()) {
+        char noTerminal = entrada.getKey();
+        List<String> listaProducciones = entrada.getValue();
+
+        for (String produccion : listaProducciones) {
+            if (produccion.equals("l")) {
+                System.out.println("Producción lambda encontrada: " + noTerminal + " ::= l");
+                if (noTerminal == axioma && listaProducciones.size() == 1) {
+                    System.out.println("Es la producción S ::= l y es la única producción del axioma");
+                    continue;  // Excluir esta producción
+                }
+                return true;
+            }
+        }
     }
+    return false;
+}
 
 
 
@@ -525,9 +541,48 @@ private boolean isTerminalString(String produccion) {
      * @return Devuelve una lista de no terminales que tenían reglas no
      *         generativas y han sido tratadas.
      */
+@Override
     public List<Character> removeLambdaProductions() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+          List<Character> noTerminalesTratados = new ArrayList<>();
+        Set<Character> lambdaNoTerminals = new HashSet<>();
+
+        // Paso 1: Identificar los no terminales que tienen producciones lambda
+        for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+            char noTerminal = entry.getKey();
+            List<String> listaProducciones = entry.getValue();
+            if (listaProducciones.contains("l")) {
+                lambdaNoTerminals.add(noTerminal);
+                noTerminalesTratados.add(noTerminal);
+            }
+        }
+
+        // Paso 2: Eliminar las producciones lambda de todos los no terminales
+        for (Character noTerminal : lambdaNoTerminals) {
+            producciones.get(noTerminal).remove("l");
+            // Si es el axioma y no tiene más producciones, mantenemos S::=l
+            if (noTerminal.equals(axioma) && producciones.get(noTerminal).isEmpty()) {
+                producciones.get(noTerminal).add("l");
+                
+            }
+        }
+
+        // Paso 3: Sustituir las producciones lambda en las producciones restantes
+        for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+            char noTerminal = entry.getKey();
+            List<String> nuevasProducciones = new ArrayList<>(entry.getValue());
+            for (String produccion : entry.getValue()) {
+                for (Character lambdaNonTerminal : lambdaNoTerminals) {
+                    if (produccion.indexOf(lambdaNonTerminal) != -1) {
+                        nuevasProducciones.add(produccion.replace(String.valueOf(lambdaNonTerminal), ""));
+                    }
+                }
+            }
+            producciones.put(noTerminal, nuevasProducciones);
+        }
+
+        return noTerminalesTratados;
     }
+    
 
 
 

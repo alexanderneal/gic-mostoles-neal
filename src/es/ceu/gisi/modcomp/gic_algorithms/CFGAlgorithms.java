@@ -189,6 +189,10 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      */
     @Override
     public void addProduction(char nonterminal, String production) throws CFGAlgorithmsException { 
+        if(!setNonTerminal.contains(nonterminal)){
+            throw new CFGAlgorithmsException("El no terminal no existe" + nonterminal);
+        }
+        
         producciones.putIfAbsent(nonterminal, new ArrayList<>());
         List<String> produccionesList = producciones.get(nonterminal);
         
@@ -201,6 +205,7 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
             throw new CFGAlgorithmsException("La produccion contiene simbolos no defeinidos previamente");
             }
         }
+        produccionesList.add(production);
     }
         
             
@@ -368,9 +373,17 @@ public void deleteGrammar() {
      */
     @Override
     public boolean hasUselessProductions() {
-        
-        
-    return true;
+        Set<Map.Entry<Character, List<String>>> entradas = producciones.entrySet();
+        for(Map.Entry<Character, List<String>>entrada:entradas){
+            char elementoNoTerminalIzq = entrada.getKey();
+            List<String> listaProduccionesDcha = entrada.getValue(); 
+            for(String production : listaProduccionesDcha) {
+                if(production.length() == 1 && production.charAt(0) == elementoNoTerminalIzq){
+                    return true;
+                }
+            }   
+        }
+        return false;
     }
 
 

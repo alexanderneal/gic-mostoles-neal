@@ -562,4 +562,12 @@ public class T1_CFGBasicTest {
 
         assertTrue(gica.isCFG());
     }
+    
+    @Test
+    public void comprobarHasUselessProductions() throws CFGAlgorithmsException {
+    gica = new CFGAlgorithms();
+    gica.addNonTerminal('A');
+    gica.addProduction('A', "A");
+    assertTrue(gica.hasUselessProductions());    }
+    
 }

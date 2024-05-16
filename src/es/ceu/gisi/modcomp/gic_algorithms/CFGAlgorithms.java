@@ -100,7 +100,10 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      */
     @Override
     public void addTerminal(char terminal) throws CFGAlgorithmsException {
-       if(!Character.isLowerCase(terminal)) {
+        if(setTerminal.contains(terminal)){
+           throw new CFGAlgorithmsException("El terminal ya se ha definido");
+        }
+        if(!Character.isLowerCase(terminal)) {
            throw new CFGAlgorithmsException("El terminal debe ser minuscula");
        }
         if(Character.isDigit(terminal)) {
@@ -245,6 +248,7 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
         }
         return true;
     }
+    
     /**
      * Devuelve una lista de String que representan todas las producciones que
      * han sido agregadas a un elemento no terminal.

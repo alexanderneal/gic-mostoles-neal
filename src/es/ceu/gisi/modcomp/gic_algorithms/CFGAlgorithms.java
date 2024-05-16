@@ -543,10 +543,9 @@ public boolean hasLambdaProductions() {
      */
 @Override
     public List<Character> removeLambdaProductions() {
-          List<Character> noTerminalesTratados = new ArrayList<>();
+        List<Character> noTerminalesTratados = new ArrayList<>();
         Set<Character> lambdaNoTerminals = new HashSet<>();
 
-        // Paso 1: Identificar los no terminales que tienen producciones lambda
         for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
             char noTerminal = entry.getKey();
             List<String> listaProducciones = entry.getValue();
@@ -556,7 +555,6 @@ public boolean hasLambdaProductions() {
             }
         }
 
-        // Paso 2: Eliminar las producciones lambda de todos los no terminales
         for (Character noTerminal : lambdaNoTerminals) {
             producciones.get(noTerminal).remove("l");
             // Si es el axioma y no tiene más producciones, mantenemos S::=l
@@ -566,7 +564,6 @@ public boolean hasLambdaProductions() {
             }
         }
 
-        // Paso 3: Sustituir las producciones lambda en las producciones restantes
         for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
             char noTerminal = entry.getKey();
             List<String> nuevasProducciones = new ArrayList<>(entry.getValue());
@@ -592,6 +589,7 @@ public boolean hasLambdaProductions() {
      *
      * @return True si contiene ese tipo de reglas
      */
+    @Override
     public boolean hasUnitProductions() {
             for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
                 for (String produccion : entry.getValue()) {
@@ -605,7 +603,7 @@ public boolean hasLambdaProductions() {
                 }
             }
             return false;
-//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
     }
 
 
@@ -630,8 +628,12 @@ public boolean hasLambdaProductions() {
      * - 3. Elimina las reglas unitarias.
      * - 4. Elimina los símbolo inútiles.
      */
+    @Override
     public void transformToWellFormedGrammar() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        hasUselessProductions();
+        removeLambdaProductions();
+        removeUnitProductions();
+        removeUselessSymbols();
     }
 
 

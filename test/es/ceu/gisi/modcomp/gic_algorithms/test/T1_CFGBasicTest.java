@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
@@ -365,6 +364,7 @@ public class T1_CFGBasicTest {
     gica = new CFGAlgorithms();
     gica.addTerminal('a');
     gica.addNonTerminal('A');
+    gica.addNonTerminal('S');
     gica.setStartSymbol('S');
     gica.addProduction('S', "ASa");
     gica.addProduction('A', "Aa");
@@ -611,4 +611,19 @@ public class T1_CFGBasicTest {
         
     }
     
+    @Test 
+    public void comprobarGramaticaBienFormada() throws CFGAlgorithmsException{
+    //hasUselessProductions
+    gica = new CFGAlgorithms();
+    gica.addNonTerminal('A');
+    gica.addProduction('A', "A");
+    assertTrue(gica.hasUselessProductions());
+    
+    //removeLambdaProductions();
+    
+    //removeUnitProductions();
+
+    //removeUselessSymbols();
+    
+    }
 }

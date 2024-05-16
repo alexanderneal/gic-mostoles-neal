@@ -154,6 +154,10 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      */
     @Override
     public void setStartSymbol(char nonterminal) throws CFGAlgorithmsException {
+        if(!nonTerminals.contains(nonterminal)){
+            throw new CFGAlgorithmsException("El axioma debe ser definido previamente");
+        }
+        
         nonTerminals.remove(Character.valueOf(nonterminal));
         nonTerminals.add(0,nonterminal);
         axioma=nonterminal;
@@ -408,17 +412,14 @@ public void deleteGrammar() {
     for(Map.Entry<Character, List<String>>entrada:entradas){
         char elementoNoTerminalIzq = entrada.getKey();
         List<String> listaProduccionesDcha = entrada.getValue();
-        Iterator<String> iterator = listaProduccionesDcha.iterator();
-           
-            while (iterator.hasNext()) {
-                String production = iterator.next();
-                    if (production.length() == 1 && production.charAt(0) == elementoNoTerminalIzq) {
+        for (String production : listaProduccionesDcha) {
+            if (production.length() == 1 && production.charAt(0) == elementoNoTerminalIzq) {
                 
-                        produccionesEliminadas.add(elementoNoTerminalIzq + "::=" + production);
+                produccionesEliminadas.add(elementoNoTerminalIzq + "::=" + production);
                 
-                         produccionesAEliminar.add(new AbstractMap.SimpleEntry<>(elementoNoTerminalIzq, production));
-                    }
-            }   
+                produccionesAEliminar.add(new AbstractMap.SimpleEntry<>(elementoNoTerminalIzq, production));
+            }
+        }   
     }   
         return produccionesEliminadas;
     }
@@ -651,6 +652,7 @@ public boolean hasLambdaProductions() {
      *                                (terminales o no terminales) no definidos
      *                                previamente.
      */
+    @Override
     public void checkCNFProduction(char nonterminal, String production) throws CFGAlgorithmsException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }

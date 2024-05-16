@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
 import org.junit.rules.ExpectedException;
 
 
@@ -87,9 +89,9 @@ public class T1_CFGBasicTest {
     public void comprobarEliminarnoTerminalNoValido1() throws CFGAlgorithmsException {
         gica = new CFGAlgorithms();
         gica.addNonTerminal('A');
-        gica.removeNonTerminal('B');
-        assertTrue(gica.getNonTerminals().contains('A'));
-        //assertFalse(gica.getNonTerminals().isEmpty());
+        gica.removeNonTerminal('A');
+        assertFalse(gica.getNonTerminals().contains('A'));
+        
 }
 
     @Test
@@ -121,8 +123,8 @@ public class T1_CFGBasicTest {
 
         assertTrue(gica.getTerminals().size() == 1);
         assertTrue(gica.getTerminals().contains('b'));
-        assertEquals("S::=b|l", gica.getProductionsToString('S'));
-        assertEquals("A::=l", gica.getProductionsToString('A'));
+        assertEquals("S::=ASa|b|l", gica.getProductionsToString('S'));
+        assertEquals("A::=a|l", gica.getProductionsToString('A'));
     }
 
 
@@ -187,6 +189,7 @@ public class T1_CFGBasicTest {
     public void comprobarEstablecerAxiomaNoValido1() throws CFGAlgorithmsException {
         thrown.expect(CFGAlgorithmsException.class);
         gica = new CFGAlgorithms();
+        gica.getNonTerminals().add('A');
         gica.setStartSymbol('S');
     }
 
@@ -379,6 +382,7 @@ public class T1_CFGBasicTest {
     gica = new CFGAlgorithms();
     gica.addTerminal('a');
     gica.addNonTerminal('A');
+    gica.addNonTerminal('S');
     gica.setStartSymbol('S');
     gica.addProduction('S', "ASa");
     gica.addProduction('A', "Aa");

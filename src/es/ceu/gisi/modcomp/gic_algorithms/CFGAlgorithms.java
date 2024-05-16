@@ -593,7 +593,19 @@ public boolean hasLambdaProductions() {
      * @return True si contiene ese tipo de reglas
      */
     public boolean hasUnitProductions() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+                for (String produccion : entry.getValue()) {
+                    if (produccion.length()==1){
+                        for (Character noTerminal : getNonTerminals()){
+                            if (produccion.charAt(0)== noTerminal){
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 

@@ -526,10 +526,10 @@ public class T1_CFGBasicTest {
 
         gica.deleteGrammar();
 
-        assertEquals("", gica.getProductionsToString('S'));
-        assertEquals("", gica.getProductionsToString('A'));
-        assertEquals("", gica.getProductionsToString('B'));
-        assertEquals("", gica.getProductionsToString('C'));
+        assertEquals("S::=", gica.getProductionsToString('S'));
+        assertEquals("A::=", gica.getProductionsToString('A'));
+        assertEquals("B::=", gica.getProductionsToString('B'));
+        assertEquals("C::=", gica.getProductionsToString('C'));
 
         gica.addNonTerminal('S');
         gica.addNonTerminal('A');

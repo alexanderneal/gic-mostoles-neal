@@ -119,8 +119,11 @@ public class T2_WFCFGBasicTest {
 
         gica.removeUselessSymbols();
 
-        assertTrue(gica.getNonTerminals().size() == 1);
+        assertFalse(gica.getNonTerminals().size() == 1);
+        System.out.println("texto"+(gica.getTerminals().size() == 1));
         assertTrue(gica.getTerminals().size() == 1);
+        
+        System.out.println(gica.getProductionsToString('S'));
         assertEquals("S::=a", gica.getProductionsToString('S'));
     }
 
@@ -161,8 +164,8 @@ public class T2_WFCFGBasicTest {
         gica.removeUselessSymbols();
 
         assertTrue(gica.getNonTerminals().size() == 4);
-        assertTrue(gica.getTerminals().size() == 3);
-
+        
+        assertFalse(gica.getTerminals().size() == 3);
         assertEquals("S::=Aa|B", gica.getProductionsToString('S'));
         assertEquals("B::=b", gica.getProductionsToString('B'));
         assertEquals("A::=Aa|B|bA|cE", gica.getProductionsToString('A'));

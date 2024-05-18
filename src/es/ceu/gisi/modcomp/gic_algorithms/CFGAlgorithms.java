@@ -510,7 +510,7 @@ public void deleteGrammar() {
         return eliminados;
     }
         
-private boolean isTerminalString(String produccion) {
+    private boolean isTerminalString(String produccion) {
         for (char c : produccion.toCharArray()) {
             if (!setTerminal.contains(c) && c != 'l') {
                 return false;
@@ -575,8 +575,8 @@ public boolean hasLambdaProductions() {
      * @return Devuelve una lista de no terminales que tenían reglas no
      *         generativas y han sido tratadas.
      */
-@Override
-    public List<Character> removeLambdaProductions() {
+@Override  
+public List<Character> removeLambdaProductions() {
     List<Character> noTerminalesTratados = new ArrayList<>();
     Set<Character> lambdaNoTerminals = new HashSet<>();
 
@@ -618,8 +618,8 @@ public boolean hasLambdaProductions() {
     producciones = nuevasProduccionesMap;
     return noTerminalesTratados;
 }
-    
-    private List<String> generarCombinaciones(String produccion, Set<Character> lambdaNoTerminals) {
+
+private List<String> generarCombinaciones(String produccion, Set<Character> lambdaNoTerminals) {
     List<String> combinaciones = new ArrayList<>();
     combinaciones.add(produccion);
     for (Character lambdaNonTerminal : lambdaNoTerminals) {
@@ -640,8 +640,8 @@ public boolean hasLambdaProductions() {
     }
     return combinaciones;
 }
-    
 
+    
 
 
     /**

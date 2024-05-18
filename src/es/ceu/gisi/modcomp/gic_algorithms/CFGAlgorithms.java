@@ -675,8 +675,55 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
      * @return Devuelve una lista de producciones (un String de la forma "A::=B"
      *         por cada producción), con todas las reglas unitarias eliminadas.
      */
+    @Override
     public List<String> removeUnitProductions() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        List<String> eliminados = new ArrayList<>();
+        outerLoop:
+        while (hasUnitProductions()==true){
+            for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {  
+                for (String produccion : entry.getValue()) {
+                    if (produccion.length()==1){
+                        for (Character noTerminal : getNonTerminals()){
+                            if (produccion.charAt(0)== noTerminal){
+                                //si llega aqui es porque entry.getkey() tiene una produccion unitaria
+                                //es decir entry.getKey()::= produccion.charAt(0) es una produccion unitaria
+                                eliminados.add(entry.getKey().toString() + "::=" + produccion);
+                                try{
+                                    removeProduction(entry.getKey(),produccion);
+                                }
+                                catch(CFGAlgorithmsException e){
+                                        System.out.println(e.getMessage());
+                                    }
+                                for(String cambios : getProductions(produccion.charAt(0))){
+                                    //cambios es cada una de las producciones de produccion.charAt(0)
+                                    try{
+                                        if ((cambios.length()== 1 && getNonTerminals().contains(cambios.charAt(0)))|| "l" == cambios){
+                                            continue;
+                                        }
+                                        if (cambios.length() ==2 && (entry.getKey().equals(cambios.charAt(1)))){
+                                            for (String a : getProductions(cambios.charAt(0))){
+                                                addProduction(entry.getKey(),a);
+                                            }
+                                        }
+                                        if (cambios.length() ==2 && (entry.getKey().equals(cambios.charAt(0)))){
+                                            for (String a : getProductions(cambios.charAt(1))){
+                                                addProduction(entry.getKey(),a);
+                                            }
+                                        }
+                                        addProduction(entry.getKey(), cambios);
+                                    }
+                                    catch(CFGAlgorithmsException e){
+                                        System.out.println(e.getMessage());
+                                    }  
+                                }
+                                continue outerLoop;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return eliminados;
     }
 
 

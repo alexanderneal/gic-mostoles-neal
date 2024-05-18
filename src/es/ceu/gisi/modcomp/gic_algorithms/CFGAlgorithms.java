@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+
+
 import java.util.Iterator;
 
 
@@ -25,13 +27,17 @@ import java.util.Iterator;
  */
 public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface, CYKInterface {
     Set<Character> setNonTerminal = new HashSet<>();
+    char nonterminal;
+    List<Character> nonTerminals = new ArrayList<>();
+    
     Set<Character> setTerminal = new HashSet<>();
     Map<Character, List<String>> producciones = new HashMap<>();
-    char nonterminal;
     Character axioma = null;
+    
+    
     List<Character> setOrdenado = new ArrayList<>(nonterminal);
-    List<Character> nonTerminals = new ArrayList<>();
     String gramm;
+    
     
     /**
      * Método que añade los elementos no terminales de la gramática.
@@ -43,16 +49,23 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      */
     @Override
     public void addNonTerminal(char nonterminal) throws CFGAlgorithmsException {
+        
         if(!Character.isUpperCase(nonterminal)){
             throw new CFGAlgorithmsException("El noTerminal debe ser mayuscula");
         } 
+        
         if(setNonTerminal.contains(nonterminal)){
             throw new CFGAlgorithmsException("Ya pertence al conjunto");
         }
+        
         if(Character.isDigit(nonterminal)){
             throw new CFGAlgorithmsException("noTerminal debe ser una letra");
         }
-            setNonTerminal.add(nonterminal);
+        
+        if(!setNonTerminal.contains(nonterminal)){    
+        setNonTerminal.add(nonterminal);
+        }
+        
     }
 
 
@@ -157,14 +170,23 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      */
     @Override
     public void setStartSymbol(char nonterminal) throws CFGAlgorithmsException {
-        if(!nonTerminals.contains(nonterminal)){
-            throw new CFGAlgorithmsException("El axioma debe ser definido previamente");
-        }
-        
-        nonTerminals.remove(Character.valueOf(nonterminal));
-        nonTerminals.add(0,nonterminal);
-        axioma=nonterminal;
+    System.out.println("NonTerminals before setting start symbol: " + nonterminal);
+   
+    List<Character> nonTerminals = new ArrayList<>();
+    nonTerminals.addAll(setNonTerminal);
+    nonTerminals.remove(Character.valueOf(nonterminal));
+    nonTerminals.add(0, nonterminal);
+    axioma = nonterminal;
+    
+    if (!setNonTerminal.contains(nonterminal)) {
+        throw new CFGAlgorithmsException("El axioma debe ser definido previamente");
     }
+    
+    
+    System.out.println("NonTerminals after setting start symbol: " + setNonTerminal);
+    System.out.println("Axioma set to: " + axioma);
+}
+
 
 
     /**

@@ -179,6 +179,7 @@ public class T1_CFGBasicTest {
         gica = new CFGAlgorithms();
         gica.addNonTerminal('S');
         gica.setStartSymbol('S');
+        System.out.println(gica.getNonTerminals());
         assertTrue(gica.getStartSymbol() == 'S');
     }
 

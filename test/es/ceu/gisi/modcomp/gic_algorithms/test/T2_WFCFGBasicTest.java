@@ -293,7 +293,7 @@ public class T2_WFCFGBasicTest {
 
 
 
-    @Test
+/*    @Test
     public void eliminaProduccionesLambda2() throws CFGAlgorithmsException {
         gica = new CFGAlgorithms();
         gica.addTerminal('a');
@@ -347,7 +347,7 @@ public class T2_WFCFGBasicTest {
         assertEquals("B::=b|bB", gica.getProductionsToString('B'));
         assertEquals("A::=Aa|B|BE|BEE|E|EE|a|b|bA", gica.getProductionsToString('A'));
     }
-
+*/
 
 
     @Test

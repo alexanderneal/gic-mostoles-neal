@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 
-import java.util.Iterator;
+
 
 
 
@@ -304,23 +304,27 @@ public class CFGAlgorithms implements CFGInterface, WFCFGInterface, CNFInterface
      *         POR ORDEN ALFABÉTICO.
      */
     @Override
-    public String getProductionsToString(char nonterminal) {
-        if(!producciones.containsKey(nonterminal)){
-            return nonterminal + "::=";
-        }
-        StringBuilder produccionesBuilder = new StringBuilder(nonterminal + "::=");
-        List<String> var = getProductions(nonterminal);
-        Collections.sort(var);
-        for(int j=0; j<var.size();j++){
-            if(!var.get(j).isEmpty()){
-                produccionesBuilder.append(var.get(j));
-                if(j<var.size()-1){
-                    produccionesBuilder.append("|");
-                }
-            }
-        }
-        return produccionesBuilder.toString();
+public String getProductionsToString(char nonterminal) {
+    if (!producciones.containsKey(nonterminal)) {
+        return nonterminal + "::=";
     }
+
+    StringBuilder produccionesBuilder = new StringBuilder(nonterminal + "::=");
+    List<String> var = getProductions(nonterminal).stream()
+        .filter(p -> !p.isEmpty()) // Filtrar producciones vacías
+        .sorted()
+        .collect(Collectors.toList());
+
+    for (int j = 0; j < var.size(); j++) {
+        produccionesBuilder.append(var.get(j));
+        if (j < var.size() - 1) {
+            produccionesBuilder.append("|");
+        }
+    }
+
+    return produccionesBuilder.toString();
+}
+
     
     /**
      * Devuelve un String con la gramática completa. Todos los elementos no
@@ -430,25 +434,28 @@ public void deleteGrammar() {
      */
     @Override
     public List<String> removeUselessProductions() {
-    List<String> produccionesEliminadas = new ArrayList<>(); 
+    List<String> produccionesEliminadas = new ArrayList<>();
     List<Map.Entry<Character, String>> produccionesAEliminar = new ArrayList<>();
-    
+
     Set<Map.Entry<Character, List<String>>> entradas = producciones.entrySet();
-    
-    for(Map.Entry<Character, List<String>>entrada:entradas){
+
+    for (Map.Entry<Character, List<String>> entrada : entradas) {
         char elementoNoTerminalIzq = entrada.getKey();
         List<String> listaProduccionesDcha = entrada.getValue();
         for (String production : listaProduccionesDcha) {
             if (production.length() == 1 && production.charAt(0) == elementoNoTerminalIzq) {
-                
                 produccionesEliminadas.add(elementoNoTerminalIzq + "::=" + production);
-                
                 produccionesAEliminar.add(new AbstractMap.SimpleEntry<>(elementoNoTerminalIzq, production));
             }
-        }   
-    }   
-        return produccionesEliminadas;
+        }
     }
+
+    for (Map.Entry<Character, String> produccion : produccionesAEliminar) {
+        producciones.get(produccion.getKey()).remove(produccion.getValue());
+    }
+
+    return produccionesEliminadas;
+}
 
 
 
@@ -570,42 +577,69 @@ public boolean hasLambdaProductions() {
      */
 @Override
     public List<Character> removeLambdaProductions() {
-        List<Character> noTerminalesTratados = new ArrayList<>();
-        Set<Character> lambdaNoTerminals = new HashSet<>();
+    List<Character> noTerminalesTratados = new ArrayList<>();
+    Set<Character> lambdaNoTerminals = new HashSet<>();
 
-        for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
-            char noTerminal = entry.getKey();
-            List<String> listaProducciones = entry.getValue();
-            if (listaProducciones.contains("l")) {
-                lambdaNoTerminals.add(noTerminal);
-                noTerminalesTratados.add(noTerminal);
+    // Identificar los no terminales que tienen producciones lambda
+    for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+        char noTerminal = entry.getKey();
+        List<String> listaProducciones = entry.getValue();
+        if (listaProducciones.contains("l")) {
+            lambdaNoTerminals.add(noTerminal);
+            noTerminalesTratados.add(noTerminal);
+        }
+    }
+
+    // Eliminar las producciones lambda excepto para el axioma si es necesario
+    for (Character noTerminal : lambdaNoTerminals) {
+        producciones.get(noTerminal).remove("l");
+        // Si es el axioma y no tiene más producciones, mantenemos S::=l
+        if (noTerminal.equals(axioma) && producciones.get(noTerminal).isEmpty()) {
+            producciones.get(noTerminal).add("l");
+        }
+    }
+
+    // Añadir nuevas producciones eliminando las apariciones de los no terminales que generan lambda
+    Map<Character, List<String>> nuevasProduccionesMap = new HashMap<>();
+    for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+        char noTerminal = entry.getKey();
+        List<String> nuevasProducciones = new ArrayList<>(entry.getValue());
+        for (String produccion : entry.getValue()) {
+            if (!produccion.equals("l")) {
+                List<String> combinaciones = generarCombinaciones(produccion, lambdaNoTerminals);
+                nuevasProducciones.addAll(combinaciones);
             }
         }
+        // Eliminar duplicados y producciones vacías
+        nuevasProducciones = nuevasProducciones.stream().distinct().filter(p -> !p.isEmpty()).collect(Collectors.toList());
+        nuevasProduccionesMap.put(noTerminal, nuevasProducciones);
+    }
 
-        for (Character noTerminal : lambdaNoTerminals) {
-            producciones.get(noTerminal).remove("l");
-            // Si es el axioma y no tiene más producciones, mantenemos S::=l
-            if (noTerminal.equals(axioma) && producciones.get(noTerminal).isEmpty()) {
-                producciones.get(noTerminal).add("l");
-                
-            }
-        }
-
-        for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
-            char noTerminal = entry.getKey();
-            List<String> nuevasProducciones = new ArrayList<>(entry.getValue());
-            for (String produccion : entry.getValue()) {
-                for (Character lambdaNonTerminal : lambdaNoTerminals) {
-                    if (produccion.indexOf(lambdaNonTerminal) != -1) {
-                        nuevasProducciones.add(produccion.replace(String.valueOf(lambdaNonTerminal), ""));
+    producciones = nuevasProduccionesMap;
+    return noTerminalesTratados;
+}
+    
+    private List<String> generarCombinaciones(String produccion, Set<Character> lambdaNoTerminals) {
+    List<String> combinaciones = new ArrayList<>();
+    combinaciones.add(produccion);
+    for (Character lambdaNonTerminal : lambdaNoTerminals) {
+        if (produccion.indexOf(lambdaNonTerminal) != -1) {
+            int size = combinaciones.size();
+            for (int i = 0; i < size; i++) {
+                String current = combinaciones.get(i);
+                int index = current.indexOf(lambdaNonTerminal);
+                while (index != -1) {
+                    String nuevaProduccion = current.substring(0, index) + current.substring(index + 1);
+                    if (!nuevaProduccion.isEmpty() && !combinaciones.contains(nuevaProduccion)) {
+                        combinaciones.add(nuevaProduccion);
                     }
+                    index = current.indexOf(lambdaNonTerminal, index + 1);
                 }
             }
-            producciones.put(noTerminal, nuevasProducciones);
         }
-
-        return noTerminalesTratados;
     }
+    return combinaciones;
+}
     
 
 

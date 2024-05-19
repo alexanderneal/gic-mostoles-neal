@@ -342,7 +342,18 @@ public String getProductionsToString(char nonterminal) {
         String nonTerminalsString = sortedNoTerminales.stream().map(String::valueOf).collect(Collectors.joining(","));
         Set<Character> terminals = getTerminals();
         Character startSymbol = axioma;
-        String producciones = getProductionsToString(nonterminal).trim();
+        String producciones="";
+        int i=1;
+        int j=sortedNoTerminales.size();
+        for (Character noTerminal : sortedNoTerminales){
+            producciones = producciones + getProductionsToString(noTerminal);
+            i++;
+            if (i<j){
+                producciones = producciones + ", ";
+            }
+            
+        }
+        //String produccion = getProductionsToString(nonterminal).trim();
         
         String gramm = nonTerminalsString +","+terminals+","+startSymbol+","+producciones;
         return gramm;
@@ -833,9 +844,13 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
     @Override
     public void transformToWellFormedGrammar() {
         hasUselessProductions();
+        System.out.println(getGrammar());
         removeLambdaProductions();
+        System.out.println(getGrammar());
         removeUnitProductions();
+        System.out.println(getGrammar());
         removeUselessSymbols();
+        System.out.println(getGrammar());
     }
 
 

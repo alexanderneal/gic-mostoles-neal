@@ -667,19 +667,102 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
 
     }
 
+    
+    
+    @Override
+    public List<String> removeUnitProductions() {
 
+        Map<Character, String> unitario = new HashMap<>();
+        String unitariocambios= "";
 
+        while(!unitario.toString().equals(unitariocambios)){
+                unitariocambios=unitario.toString();
+            for (Map.Entry<Character, List<String>> entry : producciones.entrySet()){
+                for (String produccion : entry.getValue()) {
+                    if (produccion.length() == 1 && getNonTerminals().contains(produccion.charAt(0))){
+                        if (!unitario.containsKey(entry.getKey())){
+                            unitario.put(entry.getKey(), produccion);
+                        }else{
+                            if (!unitario.get(entry.getKey()).contains(produccion)){
+                                String prod = unitario.get(entry.getKey())+produccion;
+                                unitario.put(entry.getKey(),prod);
+                            }
+                        }
+                    }
+                }
+            }
+// ahora en la variable unitario esta cada no terminal que tiene producciones unitarias y sus producciones unitarias correspondientes
+            for (Map.Entry<Character, List<String>> entry : producciones.entrySet()){
+                for (String produccion : entry.getValue()) {
+                    if (produccion.length() == 2 && getNonTerminals().contains(produccion.charAt(0)) && getNonTerminals().contains(produccion.charAt(1))){
+                        String var = unitario.get(entry.getKey());
+                        for (int i =0; i < var.length(); i++){
+                            if (var.charAt(i)==produccion.charAt(0)){
+                                if (!unitario.get(entry.getKey()).contains(produccion)){
+                                String prod = unitario.get(entry.getKey())+produccion.charAt(1);
+                                unitario.put(entry.getKey(),prod);
+                                }
+                            }
+                            if (var.charAt(i)==produccion.charAt(1)){
+                                if (!unitario.get(entry.getKey()).contains(produccion)){
+                                String prod = unitario.get(entry.getKey())+produccion.charAt(0);
+                                unitario.put(entry.getKey(), prod);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            for (Character noTerminal : unitario.keySet()){
+                int tamanno = unitario.get(noTerminal).length();
+                for (int j =0; j < tamanno; j++){
+                    Character a = unitario.get(noTerminal).charAt(j);
+                    for (String newProduction : getProductions(a)){
+                        try{
+                            if ("l".equals(newProduction) && !noTerminal.equals(getStartSymbol())){
+                                continue;
+                            }
+                                addProduction(noTerminal, newProduction);
+                        }catch(CFGAlgorithmsException f){
+                            if (f.getMessage()== "La produccion ya ha sido añadida previamente"){
+                            }else{
+                                System.out.println(f.getMessage());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        List<String> eliminados = new ArrayList<>();
+        for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+            for (String produccion : entry.getValue()) {
+                if (produccion.length()==1 && getNonTerminals().contains(produccion.charAt(0))){
+                        String a = entry.getKey().toString() + "::=" + produccion;
+                        eliminados.add(a);
+                }
+            }
+        }
+        for (String e : eliminados){
+            try {
+                removeProduction(e.charAt(0), e.charAt(4)+"" );
+            }catch(CFGAlgorithmsException p){
+                System.out.println(p.getMessage());
+            }
+        }
+        return eliminados;   
+    }
     /**
      * Método que elimina las reglas unitarias de la gramática almacenada.
      *
      * @return Devuelve una lista de producciones (un String de la forma "A::=B"
      *         por cada producción), con todas las reglas unitarias eliminadas.
      */
-    @Override
-    public List<String> removeUnitProductions() {
+//    @Override
+/**    public List<String> removeUnitProductions() {
         List<String> eliminados = new ArrayList<>();
         outerLoop:
-        while (hasUnitProductions()==true){
+       while (hasUnitProductions()==true){
             for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {  
                 for (String produccion : entry.getValue()) {
                     if (produccion.length()==1){
@@ -688,34 +771,45 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
                                 //si llega aqui es porque entry.getkey() tiene una produccion unitaria
                                 //es decir entry.getKey()::= produccion.charAt(0) es una produccion unitaria
                                 eliminados.add(entry.getKey().toString() + "::=" + produccion);
+                                System.out.print(eliminados);
+                                try{
+                                    if(getProductions(produccion.charAt(0))==null){
+                                        throw new NullPointerException(produccion +" no tiene producciones");
+                                    }
+                                    for(String cambios : getProductions(produccion.charAt(0))){
+                                        //cambios es cada una de las producciones de produccion.charAt(0)
+                                        try{
+                                            if ((cambios.length()== 1 && getNonTerminals().contains(cambios.charAt(0)))|| "l" == cambios){
+                                                continue;
+                                            }
+                                            if (cambios.length() ==2 && (entry.getKey().equals(cambios.charAt(1)))){
+                                                for (String a : getProductions(cambios.charAt(0))){
+                                                    addProduction(entry.getKey(),a);
+                                                }
+                                            }
+                                            if (cambios.length() ==2 && (entry.getKey().equals(cambios.charAt(0)))){
+                                                for (String a : getProductions(cambios.charAt(1))){
+                                                    addProduction(entry.getKey(),a);
+                                                }
+                                            }
+                                            addProduction(entry.getKey(), cambios);
+                                        }
+                                        catch(CFGAlgorithmsException e){
+                                            System.out.println(e.getMessage());
+                                        }
+                                    } 
+                                }catch(NullPointerException e){
+                                    try {removeNonTerminal(produccion.charAt(0));
+                                    }catch(CFGAlgorithmsException f){
+                                        System.out.println(f.getMessage());
+                                    }
+                                }
                                 try{
                                     removeProduction(entry.getKey(),produccion);
                                 }
                                 catch(CFGAlgorithmsException e){
                                         System.out.println(e.getMessage());
                                     }
-                                for(String cambios : getProductions(produccion.charAt(0))){
-                                    //cambios es cada una de las producciones de produccion.charAt(0)
-                                    try{
-                                        if ((cambios.length()== 1 && getNonTerminals().contains(cambios.charAt(0)))|| "l" == cambios){
-                                            continue;
-                                        }
-                                        if (cambios.length() ==2 && (entry.getKey().equals(cambios.charAt(1)))){
-                                            for (String a : getProductions(cambios.charAt(0))){
-                                                addProduction(entry.getKey(),a);
-                                            }
-                                        }
-                                        if (cambios.length() ==2 && (entry.getKey().equals(cambios.charAt(0)))){
-                                            for (String a : getProductions(cambios.charAt(1))){
-                                                addProduction(entry.getKey(),a);
-                                            }
-                                        }
-                                        addProduction(entry.getKey(), cambios);
-                                    }
-                                    catch(CFGAlgorithmsException e){
-                                        System.out.println(e.getMessage());
-                                    }  
-                                }
                                 continue outerLoop;
                             }
                         }
@@ -726,7 +820,7 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
         return eliminados;
     }
 
-
+*/
 
     /**
      * Método que transforma la gramática almacenada en una gramática bien

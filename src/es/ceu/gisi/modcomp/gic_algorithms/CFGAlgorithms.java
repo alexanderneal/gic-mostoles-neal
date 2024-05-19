@@ -343,7 +343,7 @@ public String getProductionsToString(char nonterminal) {
         Set<Character> terminals = getTerminals();
         Character startSymbol = axioma;
         String producciones="";
-        int i=1;
+        int i=0;
         int j=sortedNoTerminales.size();
         for (Character noTerminal : sortedNoTerminales){
             producciones = producciones + getProductionsToString(noTerminal);

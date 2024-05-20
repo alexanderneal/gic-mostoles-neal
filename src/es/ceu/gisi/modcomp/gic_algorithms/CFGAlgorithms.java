@@ -905,7 +905,16 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
      * @return true Si la gramática está en Forma Normal de Chomsky
      */
     public boolean isCNF() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {  
+            for (String produccion : entry.getValue()) {
+                try{
+                    checkCNFProduction(entry.getKey(), produccion);
+                }catch(CFGAlgorithmsException e){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 

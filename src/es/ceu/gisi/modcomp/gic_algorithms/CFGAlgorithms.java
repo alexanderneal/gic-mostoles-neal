@@ -867,10 +867,32 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
      *                                o si está compuesta por elementos
      *                                (terminales o no terminales) no definidos
      *                                previamente.
+     * la cadena production solo contiene la parte derecha de la produccion, no toda la produccion como pone
      */
     @Override
     public void checkCNFProduction(char nonterminal, String production) throws CFGAlgorithmsException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
+        if (!getNonTerminals().contains(nonterminal)){
+            throw new CFGAlgorithmsException ("el no terminal no está definido previamente");
+        }
+        if (production.length() > 2){
+            throw new CFGAlgorithmsException("la produccion no tiene la longitud adecuada");
+        }
+        if (production.length() == 1 && !getTerminals().contains(production.charAt(0))){
+            if (!getStartSymbol().equals(nonterminal) && !production.equals('l')){
+                throw new CFGAlgorithmsException("el caracter no es terminal");
+            }
+            
+        }
+        if (production.length()==2 && (getTerminals().contains(production.charAt(0)) || getTerminals().contains(production.charAt(0)))){
+            throw new CFGAlgorithmsException("la produccion contiene dos elementos y  uno de ellos es terminal");
+        }
+        if (production.length()==2 && (production.charAt(0)==nonterminal  || production.charAt(1)==nonterminal)){
+            throw new CFGAlgorithmsException("hay un caracter en la produccion igual al caracter que la produce");
+        }
+
+        
+        else {}
     }
 
 

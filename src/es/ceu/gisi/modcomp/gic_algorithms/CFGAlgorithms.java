@@ -843,7 +843,7 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
      */
     @Override
     public void transformToWellFormedGrammar() {
-        hasUselessProductions();
+        removeUselessProductions();
         System.out.println(getGrammar());
         removeLambdaProductions();
         System.out.println(getGrammar());
@@ -890,8 +890,6 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
         if (production.length()==2 && (production.charAt(0)==nonterminal  || production.charAt(1)==nonterminal)){
             throw new CFGAlgorithmsException("hay un caracter en la produccion igual al caracter que la produce");
         }
-
-        
         else {}
     }
 
@@ -918,7 +916,86 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
     }
 
 
-
+    
+    public boolean esGramaticaBienFormada(){
+        return !hasUselessProductions() && !hasLambdaProductions() && !hasUnitProductions() && !hasUselessProductions();
+    }
+    
+    //este metodo devuelve una lista con los caracteres en mayuscula que no estan utilizados en la gramatica
+    public List<Character> caracteresMayusculasLibres(){
+        List<Character> caracteresDisponibles = new ArrayList();
+        Set<Character> noTerminalesUsados=getNonTerminals();
+        for (Character libre='A'; libre<='Z'; libre++){
+            if (!noTerminalesUsados.contains(libre)){
+                caracteresDisponibles.add(libre);
+            }
+        }
+        return caracteresDisponibles;
+    }
+    
+    //este metodo crea los terminales que produccen un terminal y añade las producciones a la gramatica
+    //devuelve una lista con los terminales que se han añadido 
+    public List<Character> producirTerminalesSolitarios(){
+        List<Character> caracteresLibres = caracteresMayusculasLibres();
+        List<Character> noTerminalesNuevos = new ArrayList();
+        int i =0;
+        for (Character terminal: getTerminals()){
+            try{
+                addNonTerminal(caracteresLibres.get(i));
+                addProduction(caracteresLibres.get(i), terminal.toString());
+                noTerminalesNuevos.add(caracteresLibres.get(i));
+                
+                i++;
+            }
+            catch(CFGAlgorithmsException e){
+                System.out.println(e.getMessage());
+            }
+        }
+        return noTerminalesNuevos;
+    }
+    
+    public boolean tieneTerminalesEnProducciones(String prod){
+        for (int i=0; i<prod.length(); i++){
+            if (getTerminals().contains(prod.charAt(i))){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    //metodo que cambia las producciones que contienen terminales por su no terminal correspondiente
+    public void actualizarProducciones(){
+        List<Character> noTerminalesAnnadidos = producirTerminalesSolitarios();
+        Map<Character, List<String>> copiaProducciones = producciones;
+        for (Map.Entry<Character, List<String>> entry : copiaProducciones.entrySet()) {
+            for (int i=0; i<entry.getValue().size();i++){
+            
+                if(!noTerminalesAnnadidos.contains(entry.getKey())){
+                    String produccion=entry.getValue().get(i);
+                    // poner algo
+                    while(tieneTerminalesEnProducciones(produccion)){
+                        String nuevaProduccion = "";
+                        for (Character a : noTerminalesAnnadidos){
+                            nuevaProduccion = produccion.replace(getProductions(a).get(0), a.toString());
+                        try{
+                            addProduction(entry.getKey(),nuevaProduccion);
+                            if(removeProduction(entry.getKey(), produccion)){
+                                i--;
+                            }                         
+                            produccion=nuevaProduccion;
+                        }catch(CFGAlgorithmsException e){
+                            System.out.println(e.getMessage());
+                        }
+                        }
+                    }
+                }
+                if (i<0){
+                    i=-1;
+                }
+            }
+        }
+    }
+    
     /**
      * Método que transforma la gramática almacenada en su Forma Normal de
      * Chomsky equivalente.
@@ -926,10 +1003,46 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
      * @throws CFGAlgorithmsException Si la gramática de la que partimos no es
      *                                una gramática bien formada.
      */
+    //no pasa los test pero creo que es porque el metodo transformToWellFormedGrammar() da errores
+    @Override
     public void transformIntoCNF() throws CFGAlgorithmsException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (!esGramaticaBienFormada()){
+            throw new CFGAlgorithmsException ("la gramatica no es una gramática bien formada");
+        }
+        actualizarProducciones();
+        List<Character> caracteresLibres = caracteresMayusculasLibres();
+        while(!isCNF()){
+            //Map<Character, List<String>> copiaProducciones = producciones;
+            Map<Character, List<String>> copiaProducciones = new HashMap<>();
+            for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+                copiaProducciones.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+            }
+            for (Map.Entry<Character, List<String>> entry : copiaProducciones.entrySet()) {
+                for (int j=0; j<entry.getValue().size();j++) {
+                    String produccion =entry.getValue().get(j);
+                    if (produccion.length() > 2 ){
+                        for (int i=0; i< produccion.length();i+=2){
+                            if (i+2<=produccion.length()){
+                                try{
+                                    String nuevaProduccion = produccion.substring(i, i+2);
+                                    addNonTerminal(caracteresLibres.get(0));
+                                    addProduction(caracteresLibres.get(0), nuevaProduccion);
+                                    String modificarProd = produccion.replaceAll(nuevaProduccion, caracteresLibres.get(0).toString());
+                                    removeProduction(entry.getKey(),produccion);
+                                    addProduction(entry.getKey(),modificarProd);
+                                    caracteresLibres.remove(0);
+                                    produccion=modificarProd;
+                                }catch(CFGAlgorithmsException e){
+                                    System.out.println(e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println(getGrammar());
     }
-
 
 
     /**

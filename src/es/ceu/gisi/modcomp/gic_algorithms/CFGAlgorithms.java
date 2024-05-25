@@ -1131,16 +1131,76 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
     if (!esGramaticaBienFormada()) {
         throw new CFGAlgorithmsException("La gramatica no es una gramática bien formada");
     }
-    if (!isCNF() == true) {
+    
+    if (!(isCNF() == true)) {
         removeLambdaProductions();
-    removeUnitProductions();
-    removeUselessSymbols();
-    actualizarProducciones();
+        removeUnitProductions();
+        removeUselessSymbols();
+        actualizarProducciones();
+        decomposeLongProductions();
     }
     
     //System.out.println(getGrammar());
 }
 
+    private void updateProductions() throws CFGAlgorithmsException {
+    // Implement the logic to replace terminals within productions.
+    List<Character> caracteresLibres = caracteresMayusculasLibres();
+    Map<Character, Character> terminalReplacements = new HashMap<>();
+
+    for (Character terminal : setTerminal) {
+        Character newNonTerminal = caracteresLibres.remove(0);
+        terminalReplacements.put(terminal, newNonTerminal);
+        addNonTerminal(newNonTerminal);
+        addProduction(newNonTerminal, terminal.toString());
+    }
+
+    for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+        List<String> updatedProductions = new ArrayList<>();
+        for (String produccion : entry.getValue()) {
+            StringBuilder updatedProduction = new StringBuilder();
+            for (char symbol : produccion.toCharArray()) {
+                if (setTerminal.contains(symbol)) {
+                    updatedProduction.append(terminalReplacements.get(symbol));
+                } else {
+                    updatedProduction.append(symbol);
+                }
+            }
+            updatedProductions.add(updatedProduction.toString());
+        }
+        entry.setValue(updatedProductions);
+    }
+}
+    
+    private void decomposeLongProductions() throws CFGAlgorithmsException {
+    List<Character> caracteresLibres = caracteresMayusculasLibres();
+    boolean updated = true;
+
+    while (updated) {
+        updated = false;
+        Map<Character, List<String>> copiaProducciones = new HashMap<>();
+        for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+            copiaProducciones.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+
+        for (Map.Entry<Character, List<String>> entry : copiaProducciones.entrySet()) {
+            for (String produccion : entry.getValue()) {
+                if (produccion.length() > 2) {
+                    Character newNonTerminal = caracteresLibres.remove(0);
+                    addNonTerminal(newNonTerminal);
+                    String newProduction = produccion.substring(0, 2);
+                    addProduction(newNonTerminal, newProduction);
+                    String updatedProduction = newNonTerminal + produccion.substring(2);
+                    removeProduction(entry.getKey(), produccion);
+                    addProduction(entry.getKey(), updatedProduction);
+                    updated = true;
+                }
+            }
+        }
+    }
+}
+
+    
 
     /**
      * Método que indica si una palabra pertenece al lenguaje generado por la
@@ -1166,9 +1226,7 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
             throw new CFGAlgorithmsException("La palabra es vacía o el axioma no está definido.");
         }
 
-        if (!isCNF()) {
-            throw new CFGAlgorithmsException("La gramática no está en Forma Normal de Chomsky.");
-        }
+        
 
         int n = word.length();
         Set<Character>[][] table = new HashSet[n][n];

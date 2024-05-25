@@ -562,7 +562,7 @@ public boolean hasLambdaProductions() {
         List<String> listaProducciones = entrada.getValue();
 
         for (String produccion : listaProducciones) {
-            if (produccion.equals("l") && !axioma.equals(noTerminal)) {
+            if (produccion.equals("l")) {
                 System.out.println("Producción lambda encontrada: " + noTerminal + " ::= l");
                 if (noTerminal == axioma && listaProducciones.size() == 1) {
                     System.out.println("Es la producción S ::= l y es la única producción del axioma");
@@ -1035,9 +1035,9 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
     }
 
 
-    
+    //no añado hasLambdaProductions porque si el axioma produce lambda es gramatica bien formada y hasLambdaProductions()==true
     public boolean esGramaticaBienFormada(){
-        return !hasUselessProductions() && !hasLambdaProductions() && !hasUnitProductions() && !hasUselessProductions();
+        return !hasUselessProductions() && !hasUnitProductions();
     }
     
     //este metodo devuelve una lista con los caracteres en mayuscula que no estan utilizados en la gramatica

@@ -562,7 +562,7 @@ public boolean hasLambdaProductions() {
         List<String> listaProducciones = entrada.getValue();
 
         for (String produccion : listaProducciones) {
-            if (produccion.equals("l")) {
+            if (produccion.equals("l") && !axioma.equals(noTerminal)) {
                 System.out.println("Producción lambda encontrada: " + noTerminal + " ::= l");
                 if (noTerminal == axioma && listaProducciones.size() == 1) {
                     System.out.println("Es la producción S ::= l y es la única producción del axioma");
@@ -588,6 +588,125 @@ public boolean hasLambdaProductions() {
      */
 @Override  
 public List<Character> removeLambdaProductions() {
+
+    List<Character> anulables = new ArrayList<>();
+    Map<Character,List<String>> produccionesNuevas = new HashMap<>();
+    Map<Character,String> eliminarProd = new HashMap<>();
+    //añade a anulables solo los que directamente producen lambda y las añade a la lista eliminarProd para eliminarlas mas tarde 
+    for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+        Character noTerminal = entry.getKey();
+        List<String> listaProducciones = entry.getValue();
+        if (listaProducciones.contains("l")) {
+            anulables.add(noTerminal);
+            eliminarProd.put(noTerminal, "l");
+        }
+    }
+    //añade a anulables los no terminales que producen elementos anulables
+    //y se repite mientras se hagan actualizaciones en la lista anulables
+    List<Character> anulablesViejo = new ArrayList<>();
+    while(anulablesViejo != anulables){
+        anulablesViejo = anulables;
+        for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+            outerLoop:
+            for (String produccion : entry.getValue()) {
+                boolean esAnulable = false;
+                for (int w=0; w<produccion.length(); w++){
+                    if (anulables.contains(produccion.charAt(w))){
+                        esAnulable=true;
+                    } 
+                    else{
+                        continue outerLoop;
+                    }
+                }
+                if (esAnulable){
+                    if (!anulables.contains(entry.getKey())){
+                        anulables.add(entry.getKey());
+                    }
+                    
+                }
+            }
+        }
+    }
+
+    //añade a produccionesNuevas las producciones que contienen algun valor de 'anulables' eliminando ese valor
+    //puede haber problemas si la produccion contiene dos valores de anulables
+    for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
+        for (String produccion : entry.getValue()) {
+            List<Integer> posicionAnulable= new ArrayList<>();
+            for (int i=0; i<produccion.length(); i++){
+                if (anulables.contains(produccion.charAt(i))){
+                    posicionAnulable.add(i);
+                    List<String> a = new ArrayList<>();
+                    if (produccionesNuevas.get(entry.getKey())!=null){
+                        a = produccionesNuevas.get(entry.getKey());
+                    }
+                    String newProd = produccion.substring(0, i) + produccion.substring(i+1);
+                    a.add(newProd);
+                    produccionesNuevas.put(entry.getKey(),a);
+                }
+            }
+            
+            if(posicionAnulable.size()>=2){
+                System.out.println(posicionAnulable);
+                List<String> b = produccionesNuevas.get(entry.getKey());
+                for (int p=0; p<posicionAnulable.size(); p++){
+                    StringBuilder nuevasProd= new StringBuilder(produccion);
+                    int w=0;
+                    for (int j=0; j<posicionAnulable.size(); j++){
+                        if (j==p){
+                            continue;
+                        }
+                        nuevasProd.deleteCharAt(posicionAnulable.get(j)-w);
+                        w++;
+                    }
+                    b.add(nuevasProd.toString());
+                }
+                int z=0;
+                StringBuilder nuevasProd2= new StringBuilder(produccion);
+                for (int j=0; j<posicionAnulable.size(); j++){
+                    nuevasProd2.deleteCharAt(posicionAnulable.get(j)-z);
+                    z++;
+                }
+                b.add(nuevasProd2.toString());
+                produccionesNuevas.put(entry.getKey(),b);
+            }
+        }
+    }
+    System.out.println(produccionesNuevas);
+    //añade las producciones nuevas a la gramatica
+    for (Map.Entry<Character,List<String>> entry : produccionesNuevas.entrySet()){
+        for (String produccion : entry.getValue()) {
+            try{
+            addProduction(entry.getKey(),produccion);
+            }catch(CFGAlgorithmsException f){
+                System.out.println(f.getMessage());
+            }
+        }
+    }
+    
+    //elimina las todas las producciones lambda y el axioma es anulable le añade la produccion S::='l'
+
+
+    for (Map.Entry<Character,String> entry : eliminarProd.entrySet()){
+        try {
+            removeProduction(entry.getKey(),entry.getValue());
+        }catch(CFGAlgorithmsException v){
+            System.out.println(v.getMessage());
+        }
+    }
+    try{
+    if (anulables.contains(getStartSymbol())){
+        addProduction(getStartSymbol(),"l");
+    }
+    }catch(CFGAlgorithmsException r){
+        System.out.println(r.getMessage());
+    }
+    System.out.println(getGrammar());
+    return anulables;
+}
+
+
+/**public List<Character> removeLambdaProductions() {
     List<Character> noTerminalesTratados = new ArrayList<>();
     Set<Character> lambdaNoTerminals = new HashSet<>();
 
@@ -653,7 +772,7 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
 }
 
     
-
+*/
 
     /**
      * Método que comprueba si la gramática almacenada tiene reglas unitarias

@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 
-
 /**
  * Clase que testea el correcto funcionamiento de la implementación de los
  * algoritmos de limpieza de gramáticas y la obtención de una gramática bien
@@ -296,7 +295,7 @@ public class T2_WFCFGBasicTest {
 
 
 
-/*    @Test
+/*   @Test
     public void eliminaProduccionesLambda2() throws CFGAlgorithmsException {
         gica = new CFGAlgorithms();
         gica.addTerminal('a');

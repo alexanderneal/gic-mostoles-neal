@@ -1009,7 +1009,8 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
         if (production.length()==2 && (production.charAt(0)==nonterminal  || production.charAt(1)==nonterminal)){
             throw new CFGAlgorithmsException("hay un caracter en la produccion igual al caracter que la produce");
         }
-        else {}
+        else {
+        }
     }
 
 
@@ -1021,6 +1022,7 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
      *
      * @return true Si la gramática está en Forma Normal de Chomsky
      */
+    @Override
     public boolean isCNF() {
         for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {  
             for (String produccion : entry.getValue()) {
@@ -1125,43 +1127,19 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
     //no pasa los test pero creo que es porque el metodo transformToWellFormedGrammar() da errores
     @Override
     public void transformIntoCNF() throws CFGAlgorithmsException {
-        if (!esGramaticaBienFormada()){
-            throw new CFGAlgorithmsException ("la gramatica no es una gramática bien formada");
-        }
-        actualizarProducciones();
-        List<Character> caracteresLibres = caracteresMayusculasLibres();
-        while(!isCNF()){
-            //Map<Character, List<String>> copiaProducciones = producciones;
-            Map<Character, List<String>> copiaProducciones = new HashMap<>();
-            for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
-                copiaProducciones.put(entry.getKey(), new ArrayList<>(entry.getValue()));
-            }
-            for (Map.Entry<Character, List<String>> entry : copiaProducciones.entrySet()) {
-                for (int j=0; j<entry.getValue().size();j++) {
-                    String produccion =entry.getValue().get(j);
-                    if (produccion.length() > 2 ){
-                        for (int i=0; i< produccion.length();i+=2){
-                            if (i+2<=produccion.length()){
-                                try{
-                                    String nuevaProduccion = produccion.substring(i, i+2);
-                                    addNonTerminal(caracteresLibres.get(0));
-                                    addProduction(caracteresLibres.get(0), nuevaProduccion);
-                                    String modificarProd = produccion.replaceAll(nuevaProduccion, caracteresLibres.get(0).toString());
-                                    removeProduction(entry.getKey(),produccion);
-                                    addProduction(entry.getKey(),modificarProd);
-                                    caracteresLibres.remove(0);
-                                    produccion=modificarProd;
-                                }catch(CFGAlgorithmsException e){
-                                    System.out.println(e.getMessage());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        System.out.println(getGrammar());
+        
+    if (!esGramaticaBienFormada()) {
+        throw new CFGAlgorithmsException("La gramatica no es una gramática bien formada");
     }
+    if (!isCNF() == true) {
+        removeLambdaProductions();
+    removeUnitProductions();
+    removeUselessSymbols();
+    actualizarProducciones();
+    }
+    
+    //System.out.println(getGrammar());
+}
 
 
     /**
@@ -1181,8 +1159,69 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
      *                                pertenecen al conjunto de terminales definido para la gramática
      *                                introducida, si la gramática es vacía o si el autómata carece de axioma.
      */
+    @Override
     public boolean isDerivedUsignCYK(String word) throws CFGAlgorithmsException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
+        if (word.isEmpty() || axioma == null) {
+            throw new CFGAlgorithmsException("La palabra es vacía o el axioma no está definido.");
+        }
+
+        if (!isCNF()) {
+            throw new CFGAlgorithmsException("La gramática no está en Forma Normal de Chomsky.");
+        }
+
+        int n = word.length();
+        Set<Character>[][] table = new HashSet[n][n];
+
+        // Inicializo la tabla con conjuntos vacíos
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                table[i][j] = new HashSet<>();
+            }
+        }
+
+        // Lleno la base de la recursión
+        for (int i = 0; i < n; i++) {
+            char terminal = word.charAt(i);
+            if (!setTerminal.contains(terminal)) {
+                throw new CFGAlgorithmsException("La palabra contiene terminales no definidos en la gramática.");
+            }
+            for (Character nonTerminal : setNonTerminal) {
+                if (producciones.get(nonTerminal) != null) {
+                    for (String production : producciones.get(nonTerminal)) {
+                        if (production.equals(String.valueOf(terminal))) {
+                            table[0][i].add(nonTerminal);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Lleno la tabla para subcadenas más largas
+        for (int l = 2; l <= n; l++) { // l es la longitud de la subcadena
+            for (int i = 0; i <= n - l; i++) {
+                for (int j = 1; j <= l - 1; j++) {
+                    Set<Character> bSet = table[j - 1][i];
+                    Set<Character> cSet = table[l - j - 1][i + j];
+                    for (Character b : bSet) {
+                        for (Character c : cSet) {
+                            for (Character nonTerminal : setNonTerminal) {
+                                if (producciones.get(nonTerminal) != null) {
+                                    for (String production : producciones.get(nonTerminal)) {
+                                        if (production.length() == 2 && production.charAt(0) == b && production.charAt(1) == c) {
+                                            table[l - 1][i].add(nonTerminal);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Compruebo si el axioma está en la última celda
+        return table[n - 1][0].contains(axioma);
     }
 
 
@@ -1204,8 +1243,85 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
      *                                pertenecen al conjunto de terminales definido para la gramática
      *                                introducida, si la gramática es vacía o si carece de axioma.
      */
+    @Override
     public String algorithmCYKStateToString(String word) throws CFGAlgorithmsException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+      
+        if (word.isEmpty() || axioma == null) {
+            throw new CFGAlgorithmsException("La palabra es vacía o el axioma no está definido.");
+        }
+
+        if (!isCNF()) {
+            throw new CFGAlgorithmsException("La gramática no está en Forma Normal de Chomsky.");
+        }
+
+        int n = word.length();
+        Set<Character>[][] table = new HashSet[n][n];
+
+        // Inicializar la tabla con conjuntos vacíos
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                table[i][j] = new HashSet<>();
+            }
+        }
+
+        StringBuilder stateBuilder = new StringBuilder();
+
+        // Lleno la base de la recursión
+        for (int i = 0; i < n; i++) {
+            char terminal = word.charAt(i);
+            if (!setTerminal.contains(terminal)) {
+                throw new CFGAlgorithmsException("La palabra contiene terminales no definidos en la gramática.");
+            }
+            for (Character nonTerminal : setNonTerminal) {
+                if (producciones.get(nonTerminal) != null) {
+                    for (String production : producciones.get(nonTerminal)) {
+                        if (production.equals(String.valueOf(terminal))) {
+                            table[0][i].add(nonTerminal);
+                        }
+                    }
+                }
+            }
+            stateBuilder.append(getTableState(table, n)).append("\n");
+        }
+
+        // Lleno la tabla para subcadenas más largas
+        for (int l = 2; l <= n; l++) { // l es la longitud de la subcadena
+            for (int i = 0; i <= n - l; i++) {
+                for (int j = 1; j <= l - 1; j++) {
+                    Set<Character> bSet = table[j - 1][i];
+                    Set<Character> cSet = table[l - j - 1][i + j];
+                    for (Character b : bSet) {
+                        for (Character c : cSet) {
+                            for (Character nonTerminal : setNonTerminal) {
+                                if (producciones.get(nonTerminal) != null) {
+                                    for (String production : producciones.get(nonTerminal)) {
+                                        if (production.length() == 2 && production.charAt(0) == b && production.charAt(1) == c) {
+                                            table[l - 1][i].add(nonTerminal);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                stateBuilder.append(getTableState(table, n)).append("\n");
+            }
+        }
+
+        return stateBuilder.toString();
     }
 
+    private String getTableState(Set<Character>[][] table, int n) {
+        StringBuilder state = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n - i; j++) {
+                state.append("Cell[").append(i).append("][").append(j).append("]: ");
+                state.append(table[i][j].toString());
+                state.append(" ");
+            }
+            state.append("\n");
+        }
+        return state.toString();
+    }
+        
 }

@@ -56,7 +56,7 @@ public class T5_CompleteTest {
 
         gica.addProduction('S', "AB");
         gica.addProduction('S', "ASA");
-        //gica.addProduction('S', "EbDaFbE");
+        gica.addProduction('S', "EbDaFbE");
 
         gica.addProduction('A', "BS");
         gica.addProduction('A', "ASAS");

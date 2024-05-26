@@ -480,11 +480,11 @@ public void deleteGrammar() {
     public List<Character> removeUselessSymbols() {
         Set<Character> Viejo = new HashSet<>();
         Set<Character> Nuevo = new HashSet<>();
-
+        
         for (Map.Entry<Character, List<String>> entrada : producciones.entrySet()) {
                 char A = entrada.getKey();
                 for (String produccion : entrada.getValue()) {
-                  if (isTerminalString(produccion)) {
+                    if (isTerminalString(produccion)) {
                       Nuevo.add(A);
                      break;
                     }
@@ -517,11 +517,13 @@ public void deleteGrammar() {
         for (Map.Entry<Character, List<String>> entrada : producciones.entrySet()) {
             entrada.getValue().removeIf(produccion -> containsAny(inutiles, produccion));
         }
-
         return eliminados;
     }
         
     private boolean isTerminalString(String produccion) {
+        if (produccion==null || produccion.equals("")){
+            return false;
+        }
         for (char c : produccion.toCharArray()) {
             if (!setTerminal.contains(c) && c != 'l') {
                 return false;
@@ -531,6 +533,9 @@ public void deleteGrammar() {
     }
         
     private boolean containsOnly(Set<Character> conjunto, String produccion) {
+        if (produccion==null || produccion.equals("")){
+            return false;
+        }
         for (char c : produccion.toCharArray()) {
             if (!conjunto.contains(c) && !setTerminal.contains(c) && c != 'l') {
                 return false;
@@ -647,7 +652,6 @@ public List<Character> removeLambdaProductions() {
             }
             
             if(posicionAnulable.size()>=2){
-                System.out.println(posicionAnulable);
                 List<String> b = produccionesNuevas.get(entry.getKey());
                 for (int p=0; p<posicionAnulable.size(); p++){
                     StringBuilder nuevasProd= new StringBuilder(produccion);
@@ -672,7 +676,6 @@ public List<Character> removeLambdaProductions() {
             }
         }
     }
-    System.out.println(produccionesNuevas);
     //añade las producciones nuevas a la gramatica
     for (Map.Entry<Character,List<String>> entry : produccionesNuevas.entrySet()){
         for (String produccion : entry.getValue()) {
@@ -701,7 +704,6 @@ public List<Character> removeLambdaProductions() {
     }catch(CFGAlgorithmsException r){
         System.out.println(r.getMessage());
     }
-    System.out.println(getGrammar());
     return anulables;
 }
 
@@ -804,7 +806,6 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
 
         Map<Character, String> unitario = new HashMap<>();
         String unitariocambios= "";
-
         while(!unitario.toString().equals(unitariocambios)){
                 unitariocambios=unitario.toString();
             for (Map.Entry<Character, List<String>> entry : producciones.entrySet()){
@@ -826,6 +827,9 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
                 for (String produccion : entry.getValue()) {
                     if (produccion.length() == 2 && getNonTerminals().contains(produccion.charAt(0)) && getNonTerminals().contains(produccion.charAt(1))){
                         String var = unitario.get(entry.getKey());
+                        if (var==null){
+                            continue;
+                        }
                         for (int i =0; i < var.length(); i++){
                             if (var.charAt(i)==produccion.charAt(0)){
                                 if (!unitario.get(entry.getKey()).contains(produccion)){
@@ -847,6 +851,9 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
                 int tamanno = unitario.get(noTerminal).length();
                 for (int j =0; j < tamanno; j++){
                     Character a = unitario.get(noTerminal).charAt(j);
+                    if (getProductions(a)==null){
+                        continue;
+                    }
                     for (String newProduction : getProductions(a)){
                         try{
                             if ("l".equals(newProduction) && !noTerminal.equals(getStartSymbol())){
@@ -863,7 +870,6 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
                 }
             }
         }
-
         List<String> eliminados = new ArrayList<>();
         for (Map.Entry<Character, List<String>> entry : producciones.entrySet()) {
             for (String produccion : entry.getValue()) {
@@ -963,13 +969,9 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
     @Override
     public void transformToWellFormedGrammar() {
         removeUselessProductions();
-        System.out.println(getGrammar());
         removeLambdaProductions();
-        System.out.println(getGrammar());
         removeUnitProductions();
-        System.out.println(getGrammar());
         removeUselessSymbols();
-        System.out.println(getGrammar());
     }
 
 
@@ -1225,8 +1227,6 @@ private List<String> generarCombinaciones(String produccion, Set<Character> lamb
         if (word.isEmpty() || axioma == null) {
             throw new CFGAlgorithmsException("La palabra es vacía o el axioma no está definido.");
         }
-
-        
 
         int n = word.length();
         Set<Character>[][] table = new HashSet[n][n];

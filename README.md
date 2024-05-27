@@ -19,6 +19,6 @@ Esta práctica y los tests llevado a cabo aseguran el fucnionamiento coherente d
 
 Practica realizada por: Emilio Móstoles De La Fuente y Alexander Neal Yagüe
 Grupo 102
-Profesora: Mónica Robledo De Los Santos
+Profesora: Mónica Robledo De Los Santos y Sergio Saugar García.
 
 
